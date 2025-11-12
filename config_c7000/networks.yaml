@@ -1,0 +1,517 @@
+#######################################################################################
+##  Configuration file with the networking information                                #
+#######################################################################################
+## This template configures an IPv4 network infrastructure as default. For an IPv6
+## based network infrastructure, please use IPv6 subnets and remove or comment out IPv4
+## subnets. Please note that dual stack is not supported, that is, either IPv4 or IPv6
+## subnets have to be used. The IPv6 subnets in the template are based on that a
+## fd01::0/64 subnet has been assigned to the organization. Please see the IP and VLAN
+## plan for more info how to create IPv6 subnets out of an arbritary
+## wwww:xxxx:yyyy:zzzz/64 subnet assigned to the organization.
+######################################################################################
+---
+networks:
+  - name: lcm_ctrl_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan. Note that this
+    ## network is supposed to be untagged inside the host, meaning that in normal CEE deployments,
+    ## no segmentation ID shall be given for this network and the attribute shall remain to be
+    ## commented out.
+    ## For BSP deployments this be must be set to the VLAN used internally in CMX/SMX for
+    ## the controlnetwork
+    # segmentationId: 1603
+    ## Setting taggedVlan to false, means that frames will be untagged when
+    ## transmitted/received from/to the Compute Host. Port based tagging should thus be
+    ## configured in the switch fabric.
+    taggedVlan: false
+    subnets:
+      - name: lcm-ipv4
+        ## Note that the IP address part of the CIDR must be equal to the IP address used by
+        ## the Seed VMs on this subnet.
+        cidr: 10.190.0.10/24
+        ## IP allocation pools to be used by the system for automatic IP assignments.
+        ipAllocationPools:
+          - 10.190.0.20-10.190.0.254
+        vips:
+          - name: lcm_int_vip
+            address: 10.190.0.18
+            # Generally, hostname of the VIP will be FQDN
+            hostname: lcm-int-vip.cee.tld
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+            # provider: wicked
+#      - name: lcm-ipv6
+        ## Note that the IP address part of the CIDR must be equal to the IP address used by
+        ## the Seed VMs on this subnet.
+#        cidr: fd01::9/80
+#        ipAllocationPools:
+#          - fd01::20-fd01::ffff:ffff:0
+#        vips:
+#          - name: lcm_int_vip
+#            address: fd01::19
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: lcm-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+##
+    ## Mandatory network used for CEE internal system functions.
+  - name: cee_ctrl_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1604
+    taggedVlan: true
+    subnets:
+      - name: cee-ipv4
+        cidr: 10.190.16.0/24
+        ipAllocationPools:
+          - 10.190.16.20-10.190.16.254
+        ## Static IP allocations. If the hostname needs to be used as is without any automatically
+        ## added suffix, a FQDN ending with a . must be used.See example below.
+#        ipAllocations:
+#          - hostname: efa.maxburger.com.
+            ## IP address to be picked from the CEE (static) address ranges in the IP and VLAN plan.
+            ## Make sure to not pick any of the IP addresses already used for VIPs or other static
+            ## IP assignments.
+#            ipAddress: <TO.BE.FILLED>
+        vips:
+          - name: openstack_int_vip
+            address: 10.190.16.19
+            # Generally, hostname of the VIP will be FQDN
+            hostname: os-int-vip.cee.tld
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+            # provider: wicked
+#          - name: serviceassurance_int_vip
+#            address: 10.190.16.18
+#            hostname: sa-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+            # provider: pacemaker
+            ## In case an SDN controller is deployed within CEE, a northbound VIP shall be configured to
+            ## make it reachable from OpenStack. The VIP shall be taken from the CEE (static) ranges
+            ## defined in the IP and VLAN plan.
+#          - name: sdnc_nbi_vip
+            ## IP address to be picked from the CEE (static) address ranges in the IP and VLAN plan.
+            ## Make sure to not pick any of the IP addresses already used for VIPs or other static
+            ## IP assignments.
+#            address: <TO.BE.FILLED>
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: sdnc-nbi-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+          ## In case of VxSDS is in dedicated CEE10 cluster:
+#          - name: vxsds_int_vip
+#            address: 10.190.16.17
+#            hostname: vxsds-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+#      - name: cee-ipv6
+#        cidr: fd01::100:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::100:0:0:20-fd01::100:ffff:ffff:0
+#        vips:
+#          - name: openstack_int_vip
+#            address: fd01::100:0:0:19
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: os-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+#          - name: serviceassurance_int_vip
+#            address: fd01::100:0:0:18
+#            hostname: sa-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+##
+    ## Mandatory network used by the Glance service for transfer of images from Control
+    ## hosts to the Compute hosts.
+  - name: glance_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1612
+    taggedVlan: true
+    subnets:
+      - name: glance-ipv4
+        cidr: 10.190.96.0/21
+        ipAllocationPools:
+          - 10.190.96.20-10.190.102.255
+        vips:
+          - name: glance_int_vip
+            address: 10.190.96.19
+            # Generally, hostname of the VIP will be FQDN
+            hostname: glance-int-vip.cee.tld
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+            # provider: wicked
+#      - name: glance-ipv6
+#        cidr: fd01::300:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::300:0:0:20-fd01::300:ffff:ffff:0
+#        vips:
+#          - name: glance_int_vip
+#            address: fd01::300:0:0:19
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: glance-int-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+##
+     ## Mandatory network used for NexentaStor in case NexentaStor is used as backend for Cinder and Manila.
+#  - name: nfs_san_sp
+     ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: 1610
+#    taggedVlan: true
+#    subnets:
+#      - name: nfs-san-ipv4
+#        cidr: 10.190.104.0/24
+#        ipAllocationPools:
+#          - 10.190.104.20-10.190.104.254
+##
+    ## Mandatory network used for VM Live Migration.
+  - name: migration_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1615
+    taggedVlan: true
+    subnets:
+      - name: migration-ipv4
+        cidr: 10.190.128.0/21
+        ipAllocationPools:
+          - 10.190.128.20-10.190.134.255
+#      - name: migration-ipv6
+#        cidr: fd01::304:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::304:0:0:20-fd01::304:ffff:ffff:0
+##
+    ## Mandatory network used for Swift object storage. (Swift is used as backend for Glance.)
+  - name: swift_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1626
+    taggedVlan: true
+    subnets:
+      - name: swift-ipv4
+        cidr: 10.190.112.0/21
+        ipAllocationPools:
+          - 10.190.112.20-10.190.118.255
+#      - name: swift-ipv6
+#        cidr: fd01::302:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::302:0:0:20-fd01::302:ffff:ffff:0
+##
+    ## Mandatory network used for GlusterFS.
+  - name: gluster_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1627
+    taggedVlan: true
+    subnets:
+      - name: gluster-ipv4
+        cidr: 10.190.120.0/21
+        ipAllocationPools:
+          - 10.190.120.20-10.190.126.255
+#      - name: gluster-ipv6
+#        cidr: fd01::303:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::303:0:0:20-fd01::303:ffff:ffff:0
+##
+    ## Mandatory network used for northbound management and control communication.
+  - name: cee_om_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    ## Since this is an external network, the VLAN ID needs to be
+    ## provided by/aligned with the site owner and/or external network provider.
+    segmentationId: 1601
+    taggedVlan: true
+    subnets:
+      - name: cee-om-ipv4
+        ## Since this is an external network, the CIDR is site specific and needs to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan.
+        cidr: 10.33.211.128/27
+        ## Since this is an external network, the IP allocation pools are site specific and need to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan. The IP allocation pools should be taken from the CEE Hosts (dynamic) range.
+        ## Note that the IP allocation pool just need to be dimensioned for the controllers since cee_om_sp
+        ## will not be available on the Compute Hosts.
+        ipAllocationPools:
+          - 10.33.211.130-10.33.211.148
+        vips:
+          - name: openstack_ext_vip
+            ## Since this is an external network, the VIPs are site specific and need to be
+            ## provided by/aligned with the external network provider. Refer to site specific
+            ## IP and VLAN plan. The VIPs should be taken from the CEE (static) range.
+            address: 10.33.211.149
+            # Generally, hostname of the VIP will be FQDN
+            hostname: cee-om-vip.cee.tld
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+            # provider: wicked
+#      - name: cee-om-ipv6
+        ## Since this is an external network, the CIDR is site specific and needs to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan.
+#        cidr: <TO.BE.FILLED>
+        ## Since this is an external network, the IP allocation pools are site specific and need to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan. The IP allocation pools should be taken from the CEE Hosts (dynamic) range.
+        ## Note that the IP allocation pool just need to be dimensioned for the controllers since cee_om_sp
+        ## will not be available on the Compute Hosts.
+#        ipAllocationPools:
+#          - <TO.BE.FILLED>
+#        vips:
+#          - name: openstack_ext_vip
+            ## Since this is an external network, the VIPs are site specific and need to be
+            ## provided by/aligned with the external network provider. Refer to site specific
+            ## IP and VLAN plan. The VIPs should be taken from the CEE (static) range.
+#            address: <TO.BE.FILLED>
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: <TO.BE.FILLED>
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+    ##
+    ## Mandatory network used for northbound LCM communication.
+  - name: lcm_om_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    ## Since this is an external network, the VLAN ID needs to be
+    ## provided by/aligned with the site owner and/or external network provider.
+    segmentationId: 1602
+    taggedVlan: true
+    subnets:
+      - name: lcm-om-ipv4
+        cidr: 10.33.211.160/27
+        ipAllocationPools:
+          - 10.33.211.162 - 10.33.211.180
+        vips:
+          - name: lcm_ext_vip
+            address: 10.33.211.161
+            hostname: lcm-ext-vip.cee.tld
+            # provider: wicked            
+          # - name: serviceassurance_ext_vip
+            # address: 10.163.134.87
+            # provider: wicked
+            # hostname: sa-ext-vip.cee.tld
+#      - name: lcm-om-ipv6
+        ## Since this is an external network, the CIDR is site specific and needs to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan.
+#        cidr: <TO.BE.FILLED>
+        ## Since this is an external network, the IP allocation pools are site specific and need to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan. The IP allocation pools should be taken from the CEE Hosts (dynamic) range.
+        ## Note that the IP allocation pool just need to be dimensioned for the controllers since cee_om_sp
+        ## will not be available on the Compute Hosts.
+#        ipAllocationPools:
+#          - <TO.BE.FILLED>
+#        vips:
+#          - name: lcm_ext_vip
+            ## Since this is an external network, the VIPs are site specific and need to be
+            ## provided by/aligned with the external network provider. Refer to site specific
+            ## IP and VLAN plan. The VIPs should be taken from the CEE (static) range.
+#            address: <TO.BE.FILLED>
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: <TO.BE.FILLED>
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+#          - name: serviceassurance_ext_vip
+#            address: <TO.BE.FILLED>
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: <TO.BE.FILLED>
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+##
+    ## If VxSDS is used in CEE10, Frontend and Backend network(s) are needed.
+    ## There are two recommended options for creating this.
+    ##
+    ## Option1: VxSDS support Path Diversity, so two separate networks can be created for Frontend (or/and
+    ##          Backend) networks. These networks should be assigned to interfaces with different
+    ##          sourceInterface (e.g. storage0 and storage1)
+    ##          This is a common setup for setting VxSDS Frontend and Backend communication
+    ##
+    ## Option2: Create a network in which will bond (Split Plane) 2 vlan interfaces on 2 different
+    ##          sourceInterface-s. This can be created for Frontend and/or Backend purposes as well
+    ##
+    ## Option1 and Option2 can be combined.
+    ## Any number of Frontend (and/or Backend) networks can be created for VxSDS
+    ##
+    ## Option1: VxSDS Frontend network, path A (PDA)
+#  - name: vxsds_fe_san_pda
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: vxsds-fel-ipv4
+#        cidr: 10.190.48.0/21
+#        ipAllocationPools:
+#          - 10.190.48.20-10.190.54.255
+#      - name: vxsds-fel-ipv6
+#        cidr: fd01::202:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::202:0:0:20-fd01::202:ffff:ffff:0
+    ## Option1: VxSDS Frontend network, path B (PDB)
+#  - name: vxsds_fe_san_pdb
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: vxsds-fer-ipv4
+#        cidr: 10.190.56.0/21
+#        ipAllocationPools:
+#          - 10.190.56.20-10.190.62.255
+#      - name: vxsds-fer-ipv6
+#        cidr: fd01::203:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::203:0:0:20-fd01::203:ffff:ffff:0
+    ## Option1: VxSDS Backend network, path A (PDA)
+#  - name: vxsds_be_san_pda
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: vxsds-bel-ipv4
+#        cidr: 10.190.64.0/21
+#        ipAllocationPools:
+#          - 10.190.64.20-10.190.70.255
+#      - name: vxsds-bel-ipv6
+#        cidr: fd01::204:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::204:0:0:20-fd01::204:ffff:ffff:0
+    ## Option1: VxSDS Backend network, path B (PDB)
+#  - name: vxsds_be_san_pdb
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: vxsds-ber-ipv4
+#        cidr: 10.190.72.0/21
+#        ipAllocationPools:
+#          - 10.190.72.20-10.190.78.255
+#      - name: vxsds-ber-ipv6
+#        cidr: fd01::205:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::205:0:0:20-fd01::205:ffff:ffff:0
+#
+    ## Option2: VxSDS Frontend network (will be bonded, Split Plane. Or, for non redundant network)
+  - name: vxsds_fe_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1605
+    taggedVlan: true
+    subnets:
+      - name: vxsds-fe-ipv4
+        cidr: 10.190.30.0/24
+        ipAllocationPools:
+          - 10.190.30.20-10.190.30.255
+#
+    ## Option2: VxSDS Backend network (will be bonded, Split Plane. Or, for non redundant network)
+  - name: vxsds_be_san_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    segmentationId: 1606
+    taggedVlan: true
+    subnets:
+      - name: vxsds-be-ipv4
+        cidr: 10.190.31.0/24
+        ipAllocationPools:
+          - 10.190.31.20-10.190.31.255
+##
+    ## Optional network used for external connectivity when the Neutron L3 agent is deployed
+    ## in the system.
+#  - name: l3_external_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    ## Since this is an external network, the VLAN ID needs to be
+    ## provided by/aligned with the site owner and/or external network provider.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: l3-external-ipv4
+        ## Since this is an external network, the CIDR is site specific  and needs to be
+        ## provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan.
+#        cidr: <TO.BE.FILLED>
+        ## Since the underlay network has external network connectivity, the IP allocation pools are
+        ## site specific and need to be provided by/aligned with the external network provider. Refer
+        ## to site specific IP and VLAN plan. The IP allocation pools should be taken from the
+        ## CEE Hosts (dynamic) range.
+#        ipAllocationPools:
+#          - <TO.BE.FILLED>
+##
+    ## Optional network used for internal SDN controller communication.
+#  - name: sdnc_internal_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: sdnc-internal-ipv4
+#        cidr: 10.190.144.0/21
+#        ipAllocationPools:
+#          - 10.190.144.20-10.190.150.255
+#      - name: sdnc-internal-ipv6
+#        cidr: fd01::401:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::401:0:0:20-fd01::401:ffff:ffff:0
+##
+    ## Optional network used when an SDN controller is deployed in the system. Used as
+    ## the management network between the SDN controller and the vSwitch as well as
+    ## the Switch Fabric.
+#  - name: sdnc_sbi_sp
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: sdnc-sbi-ipv4
+#        cidr: 10.190.136.0/21
+#        ipAllocationPools:
+#          - 10.190.136.20-10.190.142.255
+#        vips:
+#          - name: sdnc_sbi_vip
+#            address: 10.190.136.19
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: sdnc-sbi-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+#      - name: sdnc-sbi-ipv6
+#        cidr: fd01::400:0:0:0/80
+#        ipAllocationPools:
+#          - fd01::400:0:0:20-fd01::400:ffff:ffff:0
+#        vips:
+#          - name: sdnc_sbi_vip
+#            address: fd01::400:0:0:19
+            # Generally, hostname of the VIP will be FQDN
+#            hostname: sdnc-sbi-vip
+            # Default providerType is pacemaker, wicked only to be used in NonHA deployments.
+#            provider: <pacemaker|wicked>
+##
+    ## Optional SDN underlay network. In some deployments, one underlay network per ToR pair. If so,
+    ## add the number of underlay networks needed. Only applicable in systems where the
+    ## Neutron backend uses VXLAN overlay or other tunnel overlays, for example in system
+    ## where an SDN controller is deployed as Neutron backend.
+#  - name: sdn_ul
+    ## Configure the VLAN ID as defined by the site specific IP and VLAN plan.
+    ## Since this is an external network, the VLAN ID needs to be
+    ## provided by/aligned with the site owner and/or external network provider.
+    ## In case of SDI 2 and CSC integration, segmentationId shall be set to 'auto', in which
+    ## case the VTEP information will be fetched automatically from SDI-M.
+#    segmentationId: <TO.BE.FILLED>
+#    taggedVlan: true
+#    subnets:
+#      - name: sdn-ul-ipv4-1
+       ## Since this is an external network connectivity, the CIDR is site specific
+       ## and needs to be provided by/aligned with the external network provider. Refer to site specific
+       ## IP and VLAN plan.
+       ## In case of SDI 2 and CSC integration, cidr shall be set to 'auto', in which
+       ## case the VTEP information will be fetched automatically from SDI-M. In this case ipAllocationPools
+       ## and ipAllocations are not needed.
+#        cidr: <TO.BE.FILLED>
+       ## Since the underlay network has external network connectivity, the IP allocation pools are
+       ## site specific and need to be provided by/aligned with the external network provider. Refer
+       ## to site specific IP and VLAN plan. The IP allocation pools should be taken from the
+       ## CEE Hosts (dynamic) range.
+#        ipAllocationPools:
+#          - <TO.BE.FILLED>
+#        ipAllocations:
+#          - hostname: controller1
+#            ipAddress: <TO.BE.FILLED>
+#          - hostname: controller2
+#            ipAddress: <TO.BE.FILLED>
+#          - hostname: controller3
+#            ipAddress: <TO.BE.FILLED>
+#          - hostname: compute1
+#            ipAddress: <TO.BE.FILLED>
+#          - hostname: computen
+#            ipAddress: <TO.BE.FILLED>
+#      - name: sdn-ul-ipv6-1
+        ## Since this is an external network connectivity, the CIDR is site specific
+        ## and needs to be provided by/aligned with the external network provider. Refer to site specific
+        ## IP and VLAN plan.
+#        cidr: <TO.BE.FILLED>
+        ## Since the underlay network has external network connectivity, the IP allocation pools are
+        ## site specific and need to be provided by/aligned with the external network provider. Refer
+        ## to site specific IP and VLAN plan. The IP allocation pools should be taken from the
+        ## CEE Hosts (dynamic) range.
+
+...

@@ -1,0 +1,11 @@
+#######################################################################################
+## Fabric related information for the Datacenter                                      #
+#######################################################################################
+---
+#fabrics:
+#    #Reservation for provider VLAN in BSP switches
+#  - fabricId: bsp
+#    reservation:
+#      vlan:
+#        - <vlan_start:vlan_end>
+...

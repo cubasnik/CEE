@@ -1,0 +1,77 @@
+#######################################################################################
+##  Configuration file with the memory assignments                                    #
+#######################################################################################
+##  The actual memory allocation is hardware specific.
+##  memoryAssignments.hugepagesAssignments.count and
+##  memoryAssignments.hugepagesMountpoint.count
+##  must be determined to create a valid configuration.
+##  The System Dimensioning Guide contains additional information.
+##  Note: The CPU allocation rules are defined in CPU cores, but the
+##  parameters below use CPU IDs. When simultaneous multithreading (SMT)
+##  is enabled, a CPU core maps to 2 CPU IDs (threads).
+##  The template assumes 2 NUMA nodes. Delete all allocations for NUMA 1
+##  on single-NUMA servers (e.g., BSP GEP blades).  Hugepage allocation
+##  for CSS is pre-filled with the recommended values.
+---
+memoryAssignments:
+  - name: compute_memory
+    defaultHugePageSize: 1G
+    hugepagesAssignments:
+      - name: numa0_2mb
+        size: 2M
+        count: 2048
+        numaNode: 0
+      - name: numa1_2mb
+        size: 2M
+        count: 2048
+        numaNode: 1
+      - name: numa0_1gb
+        size: 1G
+        count: 200
+        numaNode: 0
+      - name: numa1_1gb
+        size: 1G
+        count: 200
+        numaNode: 1
+    hugepagesMountpoint:
+      - name: mount_2mb
+        size: 2M
+        mountpoint: /mnt/huge_ovs_2M
+        owner: ovs
+        count: 4096
+      - name: mount_1gb
+        size: 1G
+        mountpoint: /mnt/huge_nova_1G
+        owner: libvirt
+        count: 400
+  - name: control_memory
+    defaultHugePageSize: 1G
+    hugepagesAssignments:
+      - name: numa0_2mb
+        size: 2M
+        count: 2048
+        numaNode: 0
+      - name: numa1_2mb
+        size: 2M
+        count: 2048
+        numaNode: 1
+      - name: numa0_1gb
+        size: 1G
+        count: 300
+        numaNode: 0
+      - name: numa1_1gb
+        size: 1G
+        count: 100
+        numaNode: 1
+    hugepagesMountpoint:
+      - name: mount_2mb
+        size: 2M
+        mountpoint: /mnt/huge_ovs_2M
+        owner: ovs
+        count: 4096
+      - name: mount_1gb
+        size: 1G
+        mountpoint: /mnt/huge_qemu_1G
+        owner: libvirt
+        count: 400
+...

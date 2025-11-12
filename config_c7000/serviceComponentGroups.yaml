@@ -1,0 +1,2409 @@
+#######################################################################################
+##  Configuration file with CEE serviceComponentGroups information                    #
+#######################################################################################
+##
+## Under the serviceComponentGroups key, service component types are grouped together based on the
+## type of host these service component types are supposed to be deployed on. This
+## information is then used for assigning service components in terms of component
+## groups (service definitions) to clusters and host profiles under the clusters key.
+##
+## Attributes of the serviceComponentGroups key:
+## - name: Name of the group of service component types. This name is used as a
+## reference in the clusters.serviceDefinitions.serviceComponentGroups list (clusters.yaml).
+## - serviceComponents: List of service component types.
+## - serviceComponents.name: The name of the service component type.
+## - serviceComponents.flavor: Refers to a flavor name specified under the
+## serviceComponentFlavors key (flavors.yaml).
+## - serviceComponents.plugins (optional): List of plugins used by the certain service
+## component type.
+## - serviceComponents.plugins.name: Name of the plugin.
+## - serviceComponents.plugins.pluginConfig: Reference to a key holding
+## configurations specific to the certain plugin. Could for example be certain
+## Neutron ML2 driver(s) or Cinder plugin(s).
+## - serviceComponents.version (optional): Specifies the version of a certain
+## service component if a version different than the defaul version is supposed to be
+## used.
+---
+serviceComponentGroups:
+  - name: host_services_common
+    serviceComponents:
+      - name: apparmor
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: audit
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: cee-umm
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_chrony_server
+    serviceComponents:
+      - name: chrony-server
+        flavor: default_systemd
+        serviceComponentBackend: lcm_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_chrony
+    serviceComponents:
+      - name: chrony
+        flavor: default_systemd
+        serviceComponentBackend: lcm_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_rsyslog_generator
+    serviceComponents:
+      - name: rsyslog-log-generator
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_rsyslog_aggregator
+    serviceComponents:
+      - name: rsyslog-log-aggregator
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_shared_filesystem
+    serviceComponents:
+      - name: glusterfs
+        flavor: default_systemd
+        serviceComponentBackend: gluster_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_css
+    serviceComponents:
+      - name: css
+        flavor: css
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_hypervisor
+    serviceComponents:
+      - name: libvirt
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_wicked_infra
+    serviceComponents:
+      - name: wicked
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+          serviceComponentProvides:
+            - name: lcm_int_vip
+              type: vip
+            - name: lcm_ext_vip
+              type: vip
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: host_services_wicked_openstack
+    serviceComponents:
+      - name: wicked
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+          serviceComponentProvides:
+            - name: openstack_int_vip
+              type: vip
+            - name: glance_int_vip
+              type: vip
+            - name: openstack_ext_vip
+              type: vip
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: lcm
+    serviceComponents:
+      - name: cee-lcm
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: infra_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: docker-registry
+        flavor: default_container
+        ## Optionally configure specific version.
+        version: 2.7.2
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: portal
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: infra_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: scheduler
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: sheriff
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: internal_pki_server
+    serviceComponents:
+      - name: ejbca
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: internal_pki_client
+    serviceComponents:
+      - name: cmpclient
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: serviceassurance
+    serviceComponents:
+      - name: kafka
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: notifier-controller
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: notifier-emitter
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: notifier-requeuer
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: pm_reporter
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmstorage
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-snmpagent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: zookeeper
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: serviceassurance_frontend
+    serviceComponents:
+      - name: aetos
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: serviceassurance_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: prometheus-alertmanager
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: sa_api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: serviceassurance_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmalert
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vminsert
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmselect
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-consumer
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_external_frontend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-webhook
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: serviceassurance_frontend_infra
+    serviceComponents:
+      - name: aetos
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: infra_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: prometheus-alertmanager
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: sa_api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: infra_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmalert
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vminsert
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmselect
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-consumer
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_external_frontend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: watchmen-webhook
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: serviceassurance_agents
+    serviceComponents:
+      - name: collectd
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: dbus-subscriber
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: docker-healthcheck
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: prometheus-cadvisor
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: vmagent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: sdi_agent
+    serviceComponents:
+      - name: sdi-agent
+        flavor: default_container
+#        additionalCaCerts:
+#                 - <TO.BE.FILLED>
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: sdi_agent_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: testframework
+    serviceComponents:
+      - name: robot
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: loadbalancer
+    serviceComponents:
+      - name: haproxy
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: database_infra
+    serviceComponents:
+      - name: mariadb
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: database_openstack
+    serviceComponents:
+      - name: mariadb
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: database_serviceassurance
+    serviceComponents:
+      - name: mariadb
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: serviceassurance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: messagebus
+    serviceComponents:
+      - name: rabbitmq
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_rabbitmq_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: idam
+    serviceComponents:
+      - name: idam
+        flavor: default_systemd
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: idam_agents
+    serviceComponents:
+      - name: sssd
+        flavor: default_systemd
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: clustering_csc
+    serviceComponents:
+      - name: pacemaker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+          serviceComponentProvides:
+            - name: sdnc_sbi_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+            - name: sdnc_nbi_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: clustering_infra
+    serviceComponents:
+      - name: pacemaker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+          serviceComponentProvides:
+            - name: lcm_int_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+            - name: lcm_ext_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: clustering_openstack
+    serviceComponents:
+      - name: pacemaker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+          serviceComponentProvides:
+            - name: openstack_int_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+            - name: glance_int_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+            - name: openstack_ext_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: clustering_serviceassurance
+    serviceComponents:
+      - name: pacemaker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+          serviceComponentProvides:
+            - name: serviceassurance_int_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+            - name: serviceassurance_ext_vip
+              type: vip
+#              attributes:
+#                mointorInterval: <TO.BE.FILLED>
+#                failureTimeout: <TO.BE.FILLED>
+#                migrationThreshold: <TO.BE.FILLED>
+#                resourceStickiness: <TO.BE.FILLED>
+#                targetRole: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: clustering_vxsds
+    serviceComponents:
+      - name: pacemaker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+          serviceComponentProvides:
+           - name: vxsds_int_vip
+             type: vip
+#             attributes:
+#               resourceName: <TO.BE.FILLED>
+#               monitorInterval: "5s"
+#               failureTimeout: "60"
+#               migrationThreshold: "3"
+#               resourceStickiness: "1"
+#               targetRole: "Started"
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: keystone_infra
+    serviceComponents:
+      - name: keystone
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: infra_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: infra_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: keystone_openstack
+    serviceComponents:
+      - name: keystone
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_control_default
+    serviceComponents:
+      - name: cmha-service
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: glance-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: glance_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: glance_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: heat-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: heat-api-cfn
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: heat-engine
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: horizon
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: memcached
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: neutron-server
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+        ## Optionally configure specific plugins.
+#        plugins:
+#          - name: <TO.BE.FILLED>
+#            pluginConfig: <TO.BE.FILLED>
+#       ## Example: For a BSP installation
+#        plugins:
+#          - name: bsp-ml2
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: nova-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: nova-conductor
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: nova-novncproxy
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: nova-scheduler
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: placement-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_barbican
+    serviceComponents:
+      - name: barbican-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: barbican-keystone-listener
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: barbican-worker
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_cinder
+    serviceComponents:
+      - name: cinder-api
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: cinder-backup
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: cinder-scheduler
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: cinder-volume
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+#
+        ## Optionally configure specific plugins, to configure storage backends for cinder-volume.
+        ##
+        ## The general format:
+#        plugins:
+#          - name: <TO.BE.FILLED>
+#            pluginConfig: <TO.BE.FILLED>
+        ##
+        ## Example: VxSDS and Nexenta cinder volume backend configuration from files:
+        plugins:
+#          ## the name "vxsds" must be used in case of VxSDS backends!
+          - name: vxsds
+            pluginConfig:
+              filename: config/vxsds/vxsds_backends.yml
+#          ## the name "backends" must be used for non-VxSDS type of backends!
+#          - name: backends
+#            pluginConfig:
+#              filename: config/cinder/nexenta_backends.yml
+#
+  - name: openstack_swift
+    serviceComponents:
+      - name: swift-account-auditor
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-account-reaper
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-account-replicator
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-account-server
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-container-auditor
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-container-replicator
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-container-server
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-container-updater
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-object-auditor
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-object-expirer
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-object-replicator
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-object-server
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-object-updater
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-proxy-server
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: swift-rsyncd
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: swift_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_manila
+    serviceComponents:
+      - name: manila-api
+        flavor: default_container
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: cee_external_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: manila-data
+        flavor: default_container
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: manila-scheduler
+        flavor: default_container
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: manila-share
+        flavor: default_container
+        serviceComponentBackend: cee_service_backend
+        plugins:
+          - name: backends
+            pluginConfig:
+              filename: config/manila/nexenta_backends.yml
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_openvswitch_agent
+    serviceComponents:
+      - name: neutron-openvswitch-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_neutron_dhcp_agent
+    serviceComponents:
+      - name: neutron-dhcp-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_neutron_l3_agent
+    serviceComponents:
+      - name: neutron-l3-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_neutron_metadata_agent
+    serviceComponents:
+      - name: neutron-metadata-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_default
+    serviceComponents:
+      - name: cmha-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: node_service_agent
+        flavor: default_systemd
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+      - name: nova_ssh
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: migration_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_nova_control
+    serviceComponents:
+      - name: nova-compute
+        flavor: nova_control_compute
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_nova_control_single_server
+    serviceComponents:
+      - name: nova-compute
+        flavor: nova_control_compute_single_server
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_nova_control_nonha
+    serviceComponents:
+      - name: nova-compute
+        flavor: nova_control_compute_nonha
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_nova
+    serviceComponents:
+      - name: nova-compute
+        flavor: nova_compute
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_computes_passthrough
+    serviceComponents:
+      - name: neutron-sriov-agent
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: openstack_tempest
+    serviceComponents:
+      - name: tempest
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+  - name: toolbox
+    serviceComponents:
+      - name: toolbox
+        flavor: default_container
+        ## Optionally configure specific version.
+#        version: <TO.BE.FILLED>
+  - name: vxsds_gw_dedicated
+    serviceComponents:
+      - name: vxsds-gw
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: vxsds_internal_frontend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: vxsds_gw_hyperconverged
+    serviceComponents:
+      - name: vxsds-gw
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: cee_internal_frontend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: vxsds_mdm
+    serviceComponents:
+      - name: vxsds-mdm
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: vxsds_sdc
+    serviceComponents:
+      - name: vxsds-sdc
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: vxsds_sds
+    serviceComponents:
+      - name: vxsds-sds
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: vxsds_tb
+    serviceComponents:
+      - name: vxsds-tb
+        flavor: default_systemd
+        serviceComponentBackend: cee_service_backend
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+  - name: csc
+    serviceComponents:
+      - name: csc
+        flavor: default_systemd
+        serviceComponentBackend: csc_service_backend
+        serviceComponentFrontends:
+          - serviceComponentFrontend: sdnc_nbi_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+          - serviceComponentFrontend: sdnc_sbi_frontend
+#            serviceComponentFrontendPort: <TO.BE.FILLED>
+#        serviceComponentMetadata:
+#          serviceComponentPorts:
+#            - serviceComponentDaemon: <TO.BE.FILLED>
+#              serviceComponentDaemonPort: <TO.BE.FILLED>
+#          serviceComponentProvides:
+#           - name: <TO.BE.FILLED>
+#          serviceComponentConsumes:
+#           - name: <TO.BE.FILLED>
+#             consumedServiceComponent:
+#              - serviceComponentProvider: <TO.BE.FILLED>
+#                cluster: <TO.BE.FILLED>
+## Shared services
+  - name: openstack_shared_services
+    serviceComponents:
+      - name: keystone
+        relation: centralized
+  - name: vmalert_shared_service
+    serviceComponents:
+      - name: vmalert
+        relation: provider
+  - name: serviceassurance_shared_services
+    serviceComponents:
+      - name: kafka
+        relation: centralized
+      - name: rabbitmq
+        relation: centralized
+      - name: rsyslog-log-aggregator
+        relation: centralized
+      - name: vminsert
+        relation: centralized
+  - name: cee_lcm_shared_services
+    serviceComponents:
+      - name: keystone
+        relation: provider
+      - name: cee-lcm
+        relation: provider
+  - name: infra_keystone_shared_services
+    serviceComponents:
+      - name: keystone
+        relation: centralized
+  - name: infra_shared_services
+    serviceComponents:
+      - name: kafka
+        relation: centralized
+      - name: rabbitmq
+        relation: centralized
+      - name: vminsert
+        relation: centralized
+      - name: rsyslog-log-aggregator
+        relation: centralized
+  - name: idam_shared_services
+    serviceComponents:
+      - name: idam
+        relation: centralized
+  - name: csc_shared_services
+    serviceComponents:
+      - name: csc
+        relation: centralized
+...

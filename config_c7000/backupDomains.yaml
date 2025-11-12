@@ -1,0 +1,59 @@
+---
+backupDomains:
+  - name: openstack
+    encryptBackups: true
+    encryptionPassword: "rootroot"
+    localBackupsStored: 2
+    incrementalBackup: true
+    incrementalBackupsStored: 6
+    # If import/export host is not given in the parameters the then below default values will be
+    # used. Currently full URI is expected in field below, like: ftp://username:password@ftphost/
+    # It will be replaced by host profile in future.
+#    defaultImportExportCredential: "<TO.BE.FILLED>"
+#    defaultImportExportHost: "<TO.BE.FILLED>"
+#    defaultImportExportPath: /
+  - name: infra
+    encryptBackups: true
+    encryptionPassword: "rootroot"
+    localBackupsStored: 5
+    incrementalBackup: false
+    # If import/export host is not given in the parameters the then below default values will be
+    # used. Currently full URI is expected in field below, like: ftp://username:password@ftphost/
+    # It will be replaced by host profile in future.
+#    defaultImportExportCredential: "<TO.BE.FILLED>"
+#    defaultImportExportHost: "<TO.BE.FILLED>"
+#    defaultImportExportPath: /
+  - name: lcm
+    encryptBackups: true
+    encryptionPassword: "rootroot"
+    localBackupsStored: 5
+    incrementalBackup: false
+    # If import/export host is not given in the parameters the then below default values will be
+    # used. Currently full URI is expected in field below, like: ftp://username:password@ftphost/
+    # It will be replaced by host profile in future.
+#    defaultImportExportCredential: "<TO.BE.FILLED>"
+#    defaultImportExportHost: "<TO.BE.FILLED>"
+#    defaultImportExportPath: /
+#  - name: serviceassurance
+#    encryptBackups: true
+#    encryptionPassword: "<TO.BE.FILLED>"
+#    localBackupsStored: 5
+#    incrementalBackup: false
+    # If import/export host is not given in the parameters the then below default values will be
+    # used. Currently full URI is expected in field below, like: ftp://username:password@ftphost/
+    # It will be replaced by host profile in future.
+#    defaultImportExportCredential: "<TO.BE.FILLED>"
+#    defaultImportExportHost: "<TO.BE.FILLED>"
+#    defaultImportExportPath: /
+#  - name: csc
+#    encryptBackups: true
+#    encryptionPassword: "<TO.BE.FILLED>"
+#    localBackupsStored: 5
+#    incrementalBackup: false
+    # If import/export host is not given in the parameters the then below default values will be
+    # used. Currently full URI is expected in field below, like: ftp://username:password@ftphost/
+    # It will be replaced by host profile in future.
+#    defaultImportExportCredential: "<TO.BE.FILLED>"
+#    defaultImportExportHost: "<TO.BE.FILLED>"
+#    defaultImportExportPath: /
+...

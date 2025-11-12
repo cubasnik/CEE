@@ -1,0 +1,56 @@
+#######################################################################################
+##  Configuration file with the physical networking information                       #
+#######################################################################################
+## The physical network definitons will in case of OpenStack deployments be propagated to
+## OpenStack configuration files (ml2_conf.ini, openvswitch_agent.ini) Physical networks
+## must be configured for passthrough devices if such ones are supposed to be available
+## in an OpenStack deployment.
+## In case of NVIDIA(R) Network Interface Card (NIC) interfaces configured for passthrough,
+## separate physical networks must be configured for interfaces aimed at Physical Function
+## (PF) passthrough and interfaces aimed at Virtual Function (VF) passthrough respectively.
+## Physical networks can also optionally be used for
+## OVS interfaces (br-prv). If no physical network is explicitly configured for OVS, the
+## default physical network is used.
+## Available options are:
+##  - name: The name of the physical network can contain alphanumeric characters,
+##  underscores ("_"), and hyphens ("-"). This is the name that will be used by Neutron.
+##  - mtu: Optional. The MTU of the physical network. The value must be between 1 and 9000.
+##  - networkType: Optional. List of network type(s) that are allowed to be used on the specific
+##  physical network. Value "vlan" is included by default, if not specified otherwise. The value
+##  must be in list format. Possible values are: "flat", "vlan".
+##  - vlanRange: Optional. The value must be in the following format: 'range_start:range_end'.
+##  Non-consecutive ranges should be separated with a comma. The value must be in the following
+##  format: 'range1_start:range1_end,range2_start:range2_end'. If specified, "vlan" must be
+##  included as a networkType. Used e.g. by Neutron as range to pick VLAN IDs from.
+##  - vniRange: Optional. The value must be in the following format: 'range_start:range_end'.
+##  Non-consecutive ranges should be separated with a comma. The value must be in the following
+##  format: 'range1_start:range1_end,range2_start:range2_end'. If specified, "vxlan" must be
+##  included as a networkType. Used e.g. by Neutron as range vlan and vxlan both cannot be
+##  present at the same time.
+##  - trusted: Optional. The value must be "true" or "false".
+##  When set to "true", all computes with passthrough devices in the physical network will be
+##  able to host VMs with trusted Virtual Functions (VFs). Value "false" is used by default.
+##
+## Example configuration:
+## physicalNetworks:
+##   - name: PHY0
+##     mtu: 2140
+##     networkType:
+##       - flat
+##       - vlan
+##     vlanRange: '100:150'
+##     trusted: false
+## ##To add vxlan range follow the below template
+##   - name: PHY1
+##     mtu: 2140
+##     networkType:
+##       - vxlan
+##     vniRange: '1:1000'
+---
+physicalNetworks:
+  - name: default
+    mtu: 1500  
+    networkType:
+      - vlan
+    vlanRange: '1:4000'
+...

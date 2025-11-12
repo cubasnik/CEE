@@ -1,0 +1,121 @@
+#######################################################################################
+##  Configuration file with CEE software definition                                   #
+#######################################################################################
+## - software.versions.url should be filled in the following format:
+##   '/repos/<product.number>-<product.version>-<product.buildInfo>/<repo-name>'
+##   The value of these product.number, product.version, product.buildInfo
+##   shall be found on the corresponding CEE artifact metadata file. An example
+##   value is: '/repos/CXC1737883_8-R1A01-b9ae848e-173/host-os'
+## - software.versions.version for the openstack container-v1 is
+##   to be filled with the image tag information available in the artifact
+##   metadata file. Example value: 10.0.0.1.339
+---
+software:
+  - name: hostos_sp3
+    versions:
+      - version: sles15sp3
+        url: '/repos/CXC1742929_8-R7A11-79ca18a7b1-26/ericsson-host-os'
+    type: rpm-md
+    priority: 99
+    release: 'SLES 15 SP3'
+  - name: cee_host_extras_sp3
+    versions:
+      - version: sles15sp3
+        url: '/repos/CXC1742929_8-R7A11-79ca18a7b1-26/ericsson-host-extras'
+    type: rpm-md
+    release: 'SLES 15 SP3'
+  - name: openstack
+    versions:
+      - version: 1.0
+        url: '/repos/CXC1742930_8-R7A11-79ca18a7b1-26/ericsson-openstack'
+    type: rpm-md
+    release: 'OpenStack Victoria'
+  - name: container
+    versions:
+      - version: 10.6.0.11.0.26
+        url: ':5500/cee/'
+    type: docker
+    release: 'CEE 10.5'
+  - name: cee_infra
+    versions:
+      - version: 1.0
+        url: '/repos/CXC1737883_8-R7A11-79ca18a7b1-26/cee-infra'
+    type: rpm-md
+    release: 'CEE 10.5'
+  - name: cee_serviceassurance
+    versions:
+      - version: 1.0
+        url: '/repos/CXC1742932_8-R7A11-79ca18a7b1-26/ericsson-serviceassurance'
+    type: rpm-md
+    release: 'CEE 10.5'
+  - name: portal
+    versions:
+      - version: 1.0
+        url: '/repos/CXC1742933_8-R7A11-79ca18a7b1-26/ericsson-portal-orchestrator'
+    type: rpm-md
+    release: 'CEE 10.5'
+  - name: cee_alarm_opi
+    versions:
+      - version: 1.0
+        url: '/repos/CXC1743854_8-R7A11-2565c414d4-34/ericsson-cee-alarm-opi/cee-alarm-opi'
+    type: rpm-md
+    release: 'CEE 10.5'
+#  - name: ctt
+#    versions:
+#      - version: 1.0
+#        url: '/repos/CXC1742654_8-79ca18a7b1-26/ericsson-ctt-orchestrator'
+#    type: rpm-md
+#    release: 'CEE 10.5'
+  - name: css
+    versions:
+      - version: 1.0
+        url: '/repos/CXP9042331_7-R1S-81a1055/ericsson-css'
+    type: rpm-md
+    priority: 80
+    release: 'CSS7'
+  - name: vxsds_sp3
+    versions:
+      - version: 3.6.1-sp3
+        url: '/repos/CXC1740177_8-R7A11-79ca18a7b1-26/ericsson-vxsds-server'
+    type: rpm-md
+    priority: 80
+    release: 'PowerFlex 3.6.1'
+  - name: vxsds_client_sp3
+    versions:
+      - version: 3.6.1-sp3
+        url: '/repos/CXC1743286_8-R7A11-79ca18a7b1-26/ericsson-vxsds-client'
+    type: rpm-md
+    priority: 80
+    release: 'PowerFlex 3.6.1'
+#  - name: csc_drivers
+#    versions:
+#      - version: 1.0
+#        url: '/repos/CXP9041489_8-79ca18a7b1-26/ericsson-csc-drivers'
+#    type: rpm-md
+#    release: 'OpenDayLight Oxygen'
+#  - name: csc
+#    versions:
+#      - version: 1.0
+#        url: '/repos/CXP9041489_8-79ca18a7b1-26/ericsson-csc'
+#    type: rpm-md
+#    release: 'OpenDayLight Oxygen'
+#  - name: cee_bsp_plugin
+#    versions:
+#      - version: 4.0
+#        url: '/repos/CXC1743731_8-79ca18a7b1-26/ericsson-bsp-plugin'
+#    type: rpm-md
+#    release: 'BSP plugin 4.0'
+#  - name: sdi-agent
+#    versions:
+#      - version: 1.0
+#        url: '/repos/CXC1740740_8-79ca18a7b1-26/ericsson-sdi-agent-orchestrator'
+#    type: rpm-md
+#    release: 'SDI 2.19'
+#  - name: ericsson-nexenta
+#    versions:
+#      - version: 10.2.0
+#        url: '/repos/CXC1743354_8-79ca18a7b1-26/ericsson-nexenta'
+#    type: rpm-md
+#    priority: 80
+#    release: 'CEE 10.5'
+...

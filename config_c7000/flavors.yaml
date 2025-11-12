@@ -1,0 +1,83 @@
+#######################################################################################
+##  Flavor definitions with CEE software definition                                   #
+#######################################################################################
+## Contains a list of flavor configurations for resources needed by different Service
+## Components. Flavor configurations can be HW dependent, for example flavor
+## configurations for CSS can be needed to be different for different types of
+## physical hosts. If so, add host specific flavor configurations to the list below.
+## A certain serviceComponentFlavor can be refered to in the service.serviceComponent
+## key (services.yaml) and in the
+## interfaceSchemes.networkInterfaceList.ovs_phys_pmd_profile
+## (interfaceAssignment.yaml). In the first case, the reference is done by the flavor
+## name while in the second case, the reference is done using the port
+## specified under customProperties.ovs_phys_pmd.
+##
+## Attributes of the serviceComponentFlavor key:
+## - customProperties.novaSharedCpus: Shared CPUs to be consumed by OpenStack Nova in
+## the compute hosts.
+## - customProperties.novaDedicatedCpus: Dedicated CPUs to be consumed by OpenStack
+## Nova in the compute hosts.
+## For the below attributes, check CSS User Guide to see the recommended
+## configurations.
+## - customProperties.ovs_pmd: CPUs to be dedicated to the OVS PMD threads.
+## - customProperties.ovs_pmd_ht: Assign CPU siblings to be dedicated to the OVS PMD
+## threads. If none assigned, the CPU hyper-thread siblings of the CPUs assigned above
+## for OVS PMD threads will be kept unused.
+## - customProperties.ovs_non_pmd: CPUs to be dedicated to non-PMD OVS resources,
+## like the OVS control plane.
+## - customProperties.ovs_phys_pmd: (optional) list of all CPUs dedicated to the OVS PMD threads
+## The RX queues of the physical ports will be pinned to the listed CPUs in the same order.
+## RX queues of the first physical port (data0) will be pinned to the profile0 CPUs.
+## RX queues of the second physical port (data1) will be pinned to the profile1 CPUs.
+##
+## To check how to configure API and RPC workers count for service check CEE Configuration Guide.
+---
+serviceComponentFlavors:
+  - name: default_systemd
+    controlGroup: system
+    manager: systemd
+    properties:
+      {}
+    customProperties:
+      {}
+  - name: default_container
+    controlGroup: container
+    manager: docker
+    properties:
+      {}
+  - name: nova_compute
+    controlGroup: container
+    manager: docker
+    customProperties:
+      novaSharedCpus: '2,46,24,68'
+      novaDedicatedCpus: '3-21,47-65,25-43,69-87'
+  - name: css
+    controlGroup: css
+    manager: systemd
+    customProperties:
+      ovs_pmd: '7-8'
+      ## Assign CPU siblings to be dedicated to the OVS PMD threads. If none assigned, the
+      ## CPU hyper-thread siblings of the CPUs assigned above for OVS PMD threads will be kept unused.
+      ovs_pmd_ht: '51,52'
+      ## Assign CPUs to be dedicated to non-PMD OVS resources.
+      ovs_nonpmd: '7,51'
+      ## Assign the CPUs to be dedicated to the OVS PMD threads polling physical ports.
+      ## The CPUs assigned here must be part of either ovs_pmd or ovs_pmd_ht.
+      ovs_phys_pmd:
+        profile0: '7,51'
+  - name: ovs
+    controlGroup: ovs
+    manager: systemd
+  - name: apparmor
+    controlGroup: system
+    manager: systemd
+    customProperties:
+      apparmor_mode: complain
+## Configuration of API and RPC workers count.
+#  - name: <flavorname>
+#    controlGroup: <controlGroupname>
+#    manager: docker
+#    customProperties:
+#      APIWorkersCount: '<TO.BE.FILLED>
+#      RPCWorkersCount: '<TO.BE.FILLED>
+...

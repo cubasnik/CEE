@@ -1,0 +1,366 @@
+---
+portProfiles:
+  - name: HPE_C7000_GEN8
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:04:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: control1
+        aggregator: control
+        busAddress: "0000:04:00.1"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:04:00.2"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: data1
+        aggregator: traffic
+        busAddress: "0000:04:00.3"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:04:00.4"
+        lldp:
+          adminStatus: disabled
+      - name: storage1
+        aggregator: storage
+        busAddress: "0000:04:00.5"
+        lldp:
+          adminStatus: disabled
+      - name: control10
+        aggregator: cee
+        busAddress: "0000:04:00.6"
+        lldp:
+          adminStatus: disabled
+      - name: control11
+        aggregator: cee
+        busAddress: "0000:04:00.7"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_DL360_GEN7
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:04:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:04:00.2"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: data1
+        aggregator: traffic
+        busAddress: "0000:04:00.3"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:04:00.4"
+        lldp:
+          adminStatus: disabled
+      - name: control10
+        aggregator: cee
+        busAddress: "0000:04:00.6"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_C7000_GEN8_NONRED
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:04:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:04:00.1"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:04:00.2"
+        lldp:
+          adminStatus: disabled
+      - name: control10
+        aggregator: cee
+        busAddress: "0000:04:00.3"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_C7000_GEN9
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:06:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: control1
+        aggregator: control
+        busAddress: "0000:06:00.1"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:09:00.0"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: data1
+        aggregator: traffic
+        busAddress: "0000:09:00.1"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:87:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: storage1
+        aggregator: storage
+        busAddress: "0000:87:00.1"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_C7000_GEN10
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:37:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: control1
+        aggregator: control
+        busAddress: "0000:37:00.1"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:37:00.2"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: data1
+        aggregator: traffic
+        busAddress: "0000:37:00.3"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:37:00.4"
+        lldp:
+          adminStatus: disabled
+      - name: storage1
+        aggregator: storage
+        busAddress: "0000:37:00.5"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_C7000_GEN10_NONRED
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:37:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:37:00.1"
+        driver: uio_pci_generic
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:37:00.2"
+        lldp:
+          adminStatus: disabled
+  - name: HPE_DL380_GEN10_NONRED
+    ports:
+      - name: control0
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        lldp:
+          adminStatus: disabled
+      - name: data0
+        aggregator: traffic
+        busAddress: "0000:02:00.1"
+        driver: vfio-pci
+        lldp:
+          adminStatus: disabled
+      - name: storage0
+        aggregator: storage
+        busAddress: "0000:02:00.2"
+        lldp:
+          adminStatus: disabled
+      - name: pt0
+        busAddress: "0000:02:00.3"
+        lldp:
+          adminStatus: disabled       
+## Port Profiles for virtual hosts
+  - name: VIRTUAL_LCM
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+        ## If no separate Out Of Band Management is needed, e.g. on BSP or systems
+        ## using SDI Manager, the oobm section below should be commented out.
+#      - name: oobm
+#        aggregator: control
+#        busAddress: "0000:03:00.0"
+#        networkInterface: br_oobm_ctrl
+        ## It is possible to configure multiple OOBM networks in a CEE deployment.
+        ## The example below shows the configuration applicable for one additional OOBM network.
+#      - name: oobm1
+#        aggregator: control
+#        busAddress: "0000:14:00.0"
+#        networkInterface: br_oobm_ctrl_1
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:04:00.0"
+        networkInterface: br_lcm_om
+      - name: gluster
+        aggregator: storage
+        busAddress: "0000:05:00.0"
+        networkInterface: br_gluster
+  - name: VIRTUAL_SERVICEASSURANCE
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_lcm_om
+  - name: VIRTUAL_COMPUTE
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_prv
+      - name: migration
+        aggregator: storage
+        busAddress: "0000:04:00.0"
+        networkInterface: br_migration
+  - name: VIRTUAL_INFRA
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+        ## If no separate Out Of Band Management is needed, e.g. on BSP or systems
+        ## using SDI Manager, the oobm section below should be commented out.
+#      - name: oobm
+#        aggregator: control
+#        busAddress: "0000:03:00.0"
+#        networkInterface: br_oobm_ctrl
+        ## It is possible to configure multiple OOBM networks in a CEE deployment.
+        ## The example below shows the configuration applicable for one additional OOBM network.
+#      - name: oobm1
+#        aggregator: control
+#        busAddress: "0000:14:00.0"
+#        networkInterface: br_oobm_ctrl_1
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_lcm_om
+      - name: gluster
+        aggregator: storage
+        busAddress: "0000:04:00.0"
+        networkInterface: br_gluster
+    # This might not be needed since OOBM could be mandatory for upgrade cases on SiSe as well
+    # and then the below VIRTUAL_INFRA_NONHA will be used in SiSe as well
+  - name: VIRTUAL_INFRA_SINGLE_SERVER
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_lcm_om
+  - name: VIRTUAL_INFRA_NONHA
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:04:00.0"
+        networkInterface: br_lcm_om
+  - name: VIRTUAL_NETWORK
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: data
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_prv
+      - name: exter
+        aggregator: traffic
+        busAddress: "0000:04:00.0"
+        networkInterface: br_ex
+  - name: VIRTUAL_CSC
+    virtualPorts:
+      - name: lcm
+        aggregator: control
+        busAddress: "0000:01:00.0"
+        networkInterface: br_lcm_ctrl
+      - name: control
+        aggregator: control
+        busAddress: "0000:02:00.0"
+        networkInterface: br_cee_ctrl
+      - name: sdn_sbi
+        aggregator: traffic
+        busAddress: "0000:03:00.0"
+        networkInterface: br_sdnc_sbi
+      - name: sdn_int
+        aggregator: traffic
+        busAddress: "0000:04:00.0"
+        networkInterface: br_sdnc_internal
+...

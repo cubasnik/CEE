@@ -1,0 +1,347 @@
+#######################################################################################
+##  Configuration file of host profiles for hosts in a CEE cluster                    #
+#######################################################################################
+## hostProfiles: List of Host Profiles for different types of physical and virtual
+## hosts. A certain Host Profile can be assigned to a specific host by refering to a
+## Host Profile name from within the physicalHosts or virtualHosts keys (hosts.yaml).
+##
+## Attributes of the hostProfiles key:
+## - name: A human understandable name refering to the type of physical or virtual host
+## the Host Profile refers to.
+## - interfaceAssignment: The name of a member in the list of Interface Assignments
+## under the interfaceAssignments key (in interfaceAssignment.yaml).
+## - diskAssignment: The name of a member in the list of Disk Assignments
+## under the diskAssignments key (in diskAssignment.yaml).
+## - hostConfigAssignment: The name of a member in the list of Host Configurations
+## under the hostConfig key (in hostConfig.yaml).
+## - controlGroupScheme: The name of a member in the list of Control Group Schemes
+## under the controlGroupSchemes key (in controlGroups.yaml).
+## - hostComponentGroups: The name of a member in the list of Service Component Groups
+## under the serviceComponentGroups key (in serviceComponentGroups.yaml).
+## - softwareAllocation: List of names that are defined in the Software Allocations
+## under the softwareAllocations key (in softwareAllocation.yaml).
+## - type (optional): The value "virtualMachine" states that the Host profile is
+## intended for a Virtual Host (realized as a VM).
+## - vmResources.coreCount: States the number of CPU cores to be dedicated for the
+## virtual host.
+## - vmResources.memGiB: States the memory size Gibibytes to be dedicated for the
+## virtual host.
+## - vmResources.controlGroup: States the control group on the hypervisor host which will
+## be assigned to a virtual host.
+---
+hostProfiles:
+  - name: infra
+    interfaceAssignment: infra
+    diskAssignment: infra_disks
+    hostConfigAssignment: virtual_host_config
+    controlGroupScheme: infra_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+    type: virtualMachine
+    vmResources:
+      ## Configure the number of CPU cores to be dedicated for this virtual host.
+      coreCount: 10
+      ## Configure the memory size Gibibytes to be dedicated for this virtual host.
+      memGiB: 84
+      ## Optional: Control group on the hypervisor host which will be assigned to the virtual host.
+      ## Default will be: 'machine'
+      #controlGroup: infra
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony_server
+      - host_services_rsyslog_aggregator
+      - host_services_shared_filesystem
+    serviceComponentGroups:
+      - toolbox
+      - loadbalancer
+      - database_infra
+      - messagebus
+      - clustering_infra
+      - keystone_infra
+      - lcm
+      - idam
+      - idam_agents
+      - serviceassurance
+      - serviceassurance_frontend_infra
+      - serviceassurance_agents
+      - internal_pki_client
+      - internal_pki_server
+  - name: control_mdm_gw_sds
+    interfaceAssignment: control_infra
+    diskAssignment: control_disks
+    hostConfigAssignment: control_host_config
+    memoryAssignment: control_memory
+    controlGroupScheme: control_controlgroup
+    # firewallProfile: cee-default
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      - openstack_v1
+      - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - clustering_openstack
+      - database_openstack
+      - loadbalancer
+      - messagebus
+      - idam_agents
+      - keystone_openstack
+      - serviceassurance_agents
+      - openstack_control_default
+      - openstack_openvswitch_agent
+      - openstack_neutron_dhcp_agent
+      - openstack_neutron_l3_agent
+      - openstack_cinder
+      - openstack_swift
+      - toolbox
+      - internal_pki_client
+      - vxsds_gw_hyperconverged
+      - vxsds_mdm
+      - vxsds_sdc
+      - vxsds_sds
+  - name: control_mdm_sds
+    interfaceAssignment: control_infra
+    diskAssignment: control_disks
+    hostConfigAssignment: control_host_config
+    memoryAssignment: control_memory
+    controlGroupScheme: control_controlgroup
+    # firewallProfile: cee-default
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      - openstack_v1
+      - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+        # Comment out if infra virtual hosts are not deployed on the controller
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - clustering_openstack
+      - database_openstack
+      - loadbalancer
+      - messagebus
+      - idam_agents
+      - keystone_openstack
+      - serviceassurance_agents
+      - openstack_control_default
+      - openstack_openvswitch_agent
+      - openstack_neutron_dhcp_agent
+      - openstack_neutron_l3_agent
+      - openstack_cinder
+      - openstack_swift
+      - toolbox
+      - internal_pki_client
+      - vxsds_mdm
+      - vxsds_sdc
+      - vxsds_sds
+  - name: control_sds_tb
+    interfaceAssignment: control_infra
+    diskAssignment: control_disks
+    hostConfigAssignment: control_host_config
+    memoryAssignment: control_memory
+    controlGroupScheme: control_controlgroup
+    # firewallProfile: cee-default
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      - openstack_v1
+      - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+        # Comment out if infra virtual hosts are not deployed on the controller
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - clustering_openstack
+      - database_openstack
+      - loadbalancer
+      - messagebus
+      - idam_agents
+      - keystone_openstack
+      - serviceassurance_agents
+      - openstack_control_default
+      - openstack_openvswitch_agent
+      - openstack_neutron_dhcp_agent
+      - openstack_neutron_l3_agent
+      - openstack_cinder
+      - openstack_swift
+      - toolbox
+      - internal_pki_client
+     # - vxsds_mdm
+      - vxsds_sdc
+      - vxsds_sds
+      - vxsds_tb
+      - vxsds_gw_hyperconverged
+  - name: compute_sds
+    interfaceAssignment: compute
+    diskAssignment: compute_disks_sds
+    hostConfigAssignment: compute_host_config
+    memoryAssignment: compute_memory
+    controlGroupScheme: compute_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - idam_agents
+      - serviceassurance_agents
+      - openstack_computes_default
+      - openstack_computes_nova
+      - openstack_openvswitch_agent
+      - openstack_neutron_l3_agent
+      - internal_pki_client
+      - vxsds_sdc
+      - vxsds_sds
+  - name: compute_sds_tb
+    interfaceAssignment: compute
+    diskAssignment: compute_disks_sds
+    hostConfigAssignment: compute_host_config
+    memoryAssignment: compute_memory
+    controlGroupScheme: compute_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - idam_agents
+      - serviceassurance_agents
+      - openstack_computes_default
+      - openstack_computes_nova
+      - openstack_openvswitch_agent
+      - openstack_neutron_l3_agent
+      - internal_pki_client
+      - vxsds_sdc
+      - vxsds_sds
+      - vxsds_tb
+  - name: compute
+    interfaceAssignment: compute
+    diskAssignment: compute_disks
+    hostConfigAssignment: compute_host_config
+    memoryAssignment: compute_memory
+    controlGroupScheme: compute_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+      # - vxsds_sp3
+      - vxsds_client_sp3
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+      - host_services_hypervisor
+    serviceComponentGroups:
+      - idam_agents
+      - serviceassurance_agents
+      - openstack_computes_default
+      - openstack_computes_nova
+      - openstack_openvswitch_agent
+      - openstack_neutron_l3_agent
+      - internal_pki_client
+      - vxsds_sdc
+  - name: csc
+    interfaceAssignment: csc
+    diskAssignment: csc_disks
+    hostConfigAssignment: virtual_host_config
+    controlGroupScheme: virtualhost_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+#      - vxsds_sp3
+#      - vxsds_client_sp3
+    type: virtualMachine
+    vmResources:
+      ## Configure the number of CPU cores to be dedicated for this virtual host.
+      coreCount: 8
+      ## Configure the memory size Gibibytes to be dedicated for this virtual host.
+      memGiB: 64
+      ## Optional: Control group on the hypervisor host which will be assigned to the virtual host.
+      ## Default will be: 'machine'
+      #controlGroup: csc
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+    serviceComponentGroups:
+      - loadbalancer
+      - clustering_csc
+      - idam_agents
+      - serviceassurance_agents
+      - csc
+      - internal_pki_client
+    ## Host profile for Physical Network host belonging to the openstack cluster.
+  - name: network
+    interfaceAssignment: network
+    diskAssignment: network_disks
+    hostConfigAssignment: control_host_config
+    controlGroupScheme: host_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+      - CSS_v1
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+      - host_services_css
+    serviceComponentGroups:
+      - idam_agents
+      - serviceassurance_agents
+      - openstack_openvswitch_agent
+        ## DHCP agent can be moved to network node from controller if needed.
+#      - openstack_neutron_dhcp_agent
+      - openstack_neutron_l3_agent
+      - internal_pki_client
+    ## Host profile for virtual Network host belonging to the openstack cluster.
+  - name: vnetwork
+    interfaceAssignment: vnetwork
+    diskAssignment: network_disks
+    hostConfigAssignment: virtual_host_config
+    controlGroupScheme: infra_controlgroup
+    softwareAllocation:
+      - hostOS_sp3
+    type: virtualMachine
+    vmResources:
+      ## Configure the number of CPU cores to be dedicated for this virtual host.
+      coreCount: <TO.BE.FILLED>
+      ## Configure the memory size Gibibytes to be dedicated for this virtual host.
+      memGiB: <TO.BE.FILLED>
+      ## Optional: Control group on the hypervisor host which will be assigned to the virtual host.
+      ## Default will be: 'machine'
+      #controlGroup: <TO.BE.FILLED>
+    hostComponentGroups:
+      - host_services_common
+      - host_services_chrony
+      - host_services_rsyslog_generator
+    serviceComponentGroups:
+      - idam_agents
+      - serviceassurance_agents
+      - openstack_openvswitch_agent
+      - openstack_neutron_l3_agent
+      - internal_pki_client
+...

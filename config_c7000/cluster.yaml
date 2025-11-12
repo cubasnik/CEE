@@ -1,0 +1,147 @@
+#######################################################################################
+##  Configuration file with CEE cluster information                                   #
+#######################################################################################
+##
+#######################################################################################
+## Contains a list of clusters to be part of the CEE deployment. Each cluster can
+## contain the following attributes:
+## - name: The name of the cluster.
+## - softwareAllocation: A list of sofware allocations defined under the
+## softwareAllocations key (in softwareAllocation.yaml). The software allocations
+## defines the software and SW version to be allocated to the cluster.
+---
+clusters:
+  - name: openstack
+    softwareAllocation:
+      - container_v1
+#      - bsp_plugin_v4
+#      - sdi_v1
+#      - nexenta_v1
+    sharedServices:
+      - cluster: infra
+        serviceComponentGroups:
+          - infra_shared_services
+          - idam_shared_services
+          - cee_lcm_shared_services
+          ## To be included when VxSDS is deployed as an embedded/managed service.
+          - vmalert_shared_service
+#      - cluster: csc
+#        serviceComponentGroups:
+#          - csc_shared_services
+#      # For separate LCM and Service Assurance clusters uncomment the below
+#      # and comment out the infra cluster above
+#      - cluster: lcm
+#        serviceComponentGroups:
+#          - cee_lcm_shared_services
+#          - idam_shared_services
+#      - cluster: serviceassurance
+#        serviceComponentGroups:
+#          - serviceassurance_shared_services
+#          - idam_shared_services
+#          ## To be included when VxSDS is deployed as an embedded/managed service.
+##          - vmalert_shared_service
+    configurationData:
+      - default
+      - openstack
+#      - csc
+      ## If VxSDS is to be used in the openstack cluster, there are two alternatives (that are mutually exclusive):
+      ##
+      ## Alt.1: if only the VxSDS client service (SDC) will be deployed to the openstack cluster,
+      ##   but VxSDS server services (SDS,MDM/TB,GW) will not be deployed to this cluster:
+      ##   then uncomment only `vxsds_client` line below.
+      ##
+      ##   Create a corresponding services/vxsds_client/ config directory, in which:
+      ##   ./config/vxsds/vxsds.yml file should describe VxSDS client service configuration, and
+      ##   ./config/vxsds/vxsds_backends.yml file should describe configuration for cinder volume backend for VxSDS
+      ##
+      ## Alt.2: if VxSDS server services will be deployed to openstack cluster (without or with the VxSDS client service!):
+      ##   then uncomment only `vxsds` line below.
+      ##
+      ##   Create a corresponding services/vxsds/ config directory, in which:
+      ##   ./config/vxsds/vxsds.yml file should describe VxSDS server service configuration, and
+      ##   ./config/vxsds/vxsds_backends.yml file should describe configuration for cinder volume backend for VxSDS - if
+      ##      VxSDS client is also deployed together with VxSDS server in this (openstack) cluster
+      - vxsds
+#      - vxsds_client
+    backupDomains:
+      - openstack
+  - name: infra
+    softwareAllocation:
+      - container_v1
+      - lcm_v1
+      - portal_v1
+      - serviceassurance_v1
+    configurationData:
+      - default
+    backupDomains:
+      - infra
+  # - name: lcm
+    # softwareAllocation:
+      # - container_v1
+      # - lcm_v1
+      # - portal_v1
+    # sharedServices:
+      # - cluster: serviceassurance
+        # serviceComponentGroups:
+          # - serviceassurance_shared_services
+    # configurationData:
+      # - default
+    # backupDomains:
+      # - lcm
+  # - name: serviceassurance
+    # softwareAllocation:
+      # - container_v1
+      # - serviceassurance_v1
+    # sharedServices:
+      # - cluster: lcm
+        # serviceComponentGroups:
+          # - infra_keystone_shared_services
+          # - cee_lcm_shared_services
+          # - idam_shared_services
+    # configurationData:
+      # - default
+    # backupDomains:
+      # - serviceassurance
+#  - name: csc
+#    softwareAllocation:
+#      - container_v1
+#      - csc_v1
+#    sharedServices:
+#      - cluster: infra
+#        serviceComponentGroups:
+#          - infra_shared_services
+#          - idam_shared_services
+#      - cluster: openstack
+#        serviceComponentGroups:
+#          - openstack_shared_services
+#    configurationData:
+#      - default
+#      - csc
+#    backupDomains:
+#      - csc
+#  ##
+#  ## For deploying VxSDS server services (SDS, GW, MDM/TB) in dedicated CEE10 cluster
+#  ## add the cluster below:
+#  ##
+#  - name: vxsds
+#    softwareAllocation:
+#      - container_v1
+#    sharedServices:
+#      - cluster: infra
+#        serviceComponentGroups:
+#          - infra_shared_services
+#          - idam_shared_services
+#          ## vmalert is needed for VxSDS SNMP
+#          - vmalert_shared_service
+#    configurationData:
+#      - default
+#      ## The line below indicates that user will deploy VxSDS server services to this dedicated CEE10 cluster.
+#      ## Create a corresponding services/vxsds/ directory also, and here in the file ./config/vxsds.yml
+#      ## configure VxSDS server services.
+#      ## The VxSDS client service is recommended to be deployed to another cluster, e.g. in openstack cluster.
+#      ## The VxSDS client service should be configured to work from openstack cluster then.
+#      ## See the client configuration details above in this file under the openstack cluster.
+#      - vxsds
+#    backupDomains:
+#      - vxsds
+...

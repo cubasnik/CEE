@@ -1,0 +1,166 @@
+#######################################################################################
+##  Configuration file with control group definitions for resource allocation         #
+#######################################################################################
+## - The actual CPU allocation is hardware specific. It depends on the
+##   hardware make and model and the type of CPU(s) in the system.
+##   controlGroupSchemes.controlgroups.dimensions.allowedCpus and
+##   controlGroupSchemes.controlgroups.dimensions.allowedMemoryNodes
+##   must be determined to create a valid configuration.
+##   The System Dimensioning Guide and CSS User Guide contains additional information.
+##   Note: The CPU allocation rules are defined in CPU cores, but the
+##   parameters below use CPU IDs. When simultaneous multithreading (SMT)
+##   is enabled, a CPU core maps to 2 CPU IDs (threads).
+## - Multi-level control group definitions are not supported.
+
+# ======================================================================
+# Core and Socket Information (as reported by '/sys/devices/system/cpu')
+# ======================================================================
+
+# cores =  [0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28]
+# sockets =  [0, 1]
+
+        # Socket 0        Socket 1
+        # --------        --------
+# Core 0  [0, 44]         [22, 66]
+# Core 1  [1, 45]         [23, 67]
+# Core 2  [2, 46]         [24, 68]
+# Core 3  [3, 47]         [25, 69]
+# Core 4  [4, 48]         [26, 70]
+# Core 5  [5, 49]         [27, 71]
+# Core 8  [6, 50]         [28, 72]
+# Core 9  [7, 51]         [29, 73]
+# Core 10 [8, 52]         [30, 74]
+# Core 11 [9, 53]         [31, 75]
+# Core 12 [10, 54]        [32, 76]
+# Core 16 [11, 55]        [33, 77]
+# Core 17 [12, 56]        [34, 78]
+# Core 18 [13, 57]        [35, 79]
+# Core 19 [14, 58]        [36, 80]
+# Core 20 [15, 59]        [37, 81]
+# Core 21 [16, 60]        [38, 82]
+# Core 24 [17, 61]        [39, 83]
+# Core 25 [18, 62]        [40, 84]
+# Core 26 [19, 63]        [41, 85]
+# Core 27 [20, 64]        [42, 86]
+# Core 28 [21, 65]        [43, 87]
+
+---
+controlGroupSchemes:
+    ## Physical host with CSS and Tenant VMs
+  - name: compute_controlgroup
+    controlGroups:
+      ## Host OS
+    - name: system
+      dimensions:
+        allowedCpus: '0,44,22,66'
+    - name: css
+      dimensions:
+        allowedCpus: '0-1,44-45,22-23,66-67'
+    - name: container
+      dimensions:
+        allowedCpus: '0,44,22,66'
+        allowedMemoryNodes: '0,1'
+    - name: machine
+      dimensions:
+        allowedCpus: '2-21,46-65,24-43,68-87'
+        allowedMemoryNodes: '0,1'
+    ## Single physical host host with CSS, with tenant VMs, and virtual
+    ## infrastrucure host with colocated LCM and SA services
+  - name: control_controlgroup
+    controlGroups:
+      ## Host OS
+    - name: system
+      dimensions:
+        allowedCpus: '0-6,44-50'
+    - name: css
+      dimensions:
+        allowedCpus: '0-8,44-52'
+    - name: machine
+      dimensions:
+        allowedCpus: '9-21,53-65'
+        allowedMemoryNodes: '0'
+    - name: container
+      dimensions:
+        allowedCpus: '22-43,66-87'
+        allowedMemoryNodes: '1'
+    ## Physical host without CSS and without virtual infrastructure hosts
+  - name: host_controlgroup
+    controlGroups:
+      ## Host OS
+    - name: system
+      dimensions:
+        allowedCpus: '0,10,1,11'
+      ## Containerized services
+    - name: container
+      dimensions:
+        allowedCpus: '4-7,14-17'
+        allowedMemoryNodes: '0'
+  - name: hypervisor_controlgroup
+    controlGroups:
+    ## Host OS
+    - name: system
+      dimensions:
+        ## Allocate 2 CPU cores
+        ## . first core from each NUMA node on dual NUMA systems
+        ## . first 2 cores on single NUMA systems
+        allowedCpus: '<TO.BE.FILLED>'
+      ## Containerized services
+    - name: container
+      dimensions:
+        ## List the CPUs allocated for control group 'system' above,
+        ## containerized services use the same CPUs on compute nodes
+        allowedCpus: '<TO.BE.FILLED>'
+        ## NUMA node(s) of allocated CPUs, e.g., 0,1
+        allowedMemoryNodes: '<TO.BE.FILLED>'
+      ## Tenant VMs and virtual infrastructure hosts
+    - name: machine
+      dimensions:
+        ## Allocate the remaining CPUs
+        allowedCpus: '<TO.BE.FILLED>'
+        ## NUMA node(s) of allocated CPUs, e.g., 0,1
+        allowedMemoryNodes: '<TO.BE.FILLED>'
+    ## there is no dedicated resource allocation for either host OS or containers
+  - name: vcompute_controlgroup
+    controlGroups:
+      ## Host OS
+    - name: system
+      dimensions:
+        ## Allocate 2 CPU cores
+        allowedCpus: '<TO.BE.FILLED>'
+      ## Containerized services
+    - name: container
+      dimensions:
+        ## List the CPUs allocated for control group 'system' above,
+        ## containerized services use the same CPUs on compute nodes
+        allowedCpus: '<TO.BE.FILLED>'
+        ## NUMA node(s) of allocated CPUs, e.g., 0,1
+        allowedMemoryNodes: '<TO.BE.FILLED>'
+      ## Tenant VMs
+    - name: machine
+      dimensions:
+        ## Allocate the remaining CPUs
+        allowedCpus: '<TO.BE.FILLED>'
+        ## NUMA node(s) of allocated CPUs, e.g., 0,1
+        allowedMemoryNodes: '<TO.BE.FILLED>'
+    ## Virtual host with allocation for containers
+  - name: virtualhost_controlgroup
+    controlGroups:
+      ## Host OS
+    - name: system
+      dimensions:
+        ## Allocate 2 CPU cores
+        allowedCpus: '<TO.BE.FILLED>'
+      ## Containerized services
+    - name: container
+      dimensions:
+        ## List the CPUs allocated for control group 'system' above,
+        ## containerized services use the same CPUs on compute nodes
+        allowedCpus: '<TO.BE.FILLED>'
+        ## NUMA node(s) of allocated CPUs, e.g., 0,1
+        allowedMemoryNodes: '<TO.BE.FILLED>'
+    ## Virtual infrastructure host
+  - name: infra_controlgroup
+    controlGroups:
+      ## Create the container slice without resource limits
+    - name: container
+...

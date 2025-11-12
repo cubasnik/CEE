@@ -1,0 +1,19 @@
+licenseManagement:
+  # List of license servers (NeLS)
+  licenseServers:
+    # the first license server is mandatory
+    - name: primary     # used in logs, but no meaning for the code
+      licenseService:           # parameters specific to the NeLS Client API
+        remoteServer: 10.111.175.72     # name of a remote TLS server instance managed via the LCM API
+        tlsProtocols: TLSv1.2
+        tlsCipherSuites: 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:AES256-GCM-SHA384:AES256-SHA256:AES128-GCM-SHA256:AES128-SHA256'
+    # the second license server is optional, needed when NeLS is geo-redundant
+#    - name: secondary
+#      licenseService:
+#        remoteServer: <SECONDARY_LICENSE_SERVER>
+#        tlsProtocols: <OPENSSL_PROTOCOLS>
+#        tlsCipherSuites: <OPENSSL_CIPHERSUITES>
+  customerId: '940064'  # from SW Supply
+  swltId:                    # Software License Target IDs
+    cee: 'PAPP2_CEE01'      # mandatory
+#    csc: <CSC_SWLT_ID>       # conditional, required when CSC is present

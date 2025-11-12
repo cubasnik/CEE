@@ -1,0 +1,29 @@
+#######################################################################################
+## Configuration file with CEE regions information for Keystone                       #
+#######################################################################################
+---
+regions:
+  - name: CEERegion
+    cluster:
+      - name: openstack
+        serviceComponent:
+          - all
+  - name: InfraRegion
+    cluster:
+      - name: infra
+        serviceComponent:
+          - all
+#  - name: LCMRegion
+#    cluster:
+#      - name: lcm
+#        serviceComponent:
+#          - all
+#      - name: serviceassurance
+#        serviceComponent:
+#         - all
+  - name: CSCRegion
+    cluster:
+      - name: csc
+        serviceComponent:
+          - all
+...

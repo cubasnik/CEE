@@ -1,0 +1,156 @@
+#######################################################################################
+##  Configuration file with CEE services information                                  #
+#######################################################################################
+##
+## Under the vxsds.clusters compound key, vxsds service clusters are listed that can be
+## accessed from the actual cee cluster. This information is then used to deploy VxSDS
+## services in cee cluster. This information is also used for cinder-volume backend
+## configuration for VxSDS.
+##
+## Attributes of the vxsds.clusters[]:
+##
+## - name: Name of the VxSDS cluster. This name is used as a reference, e.g. in cinder-
+## volume plugin configuration for VxSDS, therefore its value must be unique.
+## Mandatory.
+## - ceeManaged: This element determines the management mode for VxSDS.
+##   Possible values:
+##   full   - Enables VxSDS in embedded mode to configure and deploy a VxSDS cluster
+##            in a CEE cluster as storage back end.
+##   client - Enables VxSDS in shared mode to connect a CEE cluster to an already
+##            deployed external VxSDS cluster.
+## Mandatory.
+## - password: This element defines the password for the MDM admin user.
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+## - gatewayUser: the username used by cinder-volume on Gateway REST API to access
+## VxSDS backend volumes. Must also be defined under the `users` key with
+## `FrontEndConfigure` role.
+## Mandatory.
+## - gatewayAdminPassword: This element defines the password for the gateway admin user
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+## - gatewayIp: the GW IP address, on which gatewayUser access the VxSDS backends.
+## Usually it is a VIP address.
+## Mandatory for shared VxSDS, must be omitted for embedded VxSDS.
+## - gatewayPort: the GW port number for gatewayIp address
+## Mandatory for shared VxSDS, not applicable for embedded VxSDS.
+## - gatewayBePorts:
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+##
+##   Attributes of gatewayBePorts:
+##
+##   - ssl: ssl port
+##   - http: http port
+##
+## - frontendNetworks: list of VxSDS frontend (sub)network names
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+## - backendNetworks: list of VxSDS backend (sub)network names
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+## - managementNetwork: list of VxSDS management (sub)network names
+## Mandatory for embedded VxSDS, not applicable for shared VxSDS.
+## - snmp: Please, see inline comments below in the example template.
+## Optional for embedded VxSDS, not applicable for shared VxSDS.
+## - users: This element lists the VxSDS user accounts
+## Mandatory.
+##
+##   Attributes of users[]:
+##
+##   - name: user name
+##   - pwd: user password
+##   - role: Possible values:
+##     Administrator || BackEndConfig || FrontEndConfigure || Monitor || Configure
+##
+## - protectionDomains: list of VxSDS protection domains.
+## Mandatory for embedded VxSDS. Not used for shared VxSDS, however this will change
+## in the future.
+##
+##   Attributes of protectionDomains[]:
+##
+##   - name: Name of protection domain
+##   - pools: list of pools for the protection domain
+##
+##     Attributes of pools[]:
+##
+##     - name: name of the pool
+##     - zeroPadding: This element defines the zeropadding policy.
+##     Possible values: ( enabled | disabled )
+##     Default value is disabled.
+##     Optional.
+##     - sparePercentage: VxSDS reserves the given % of the capacity as spare (not allowing it
+##     to be used for volume allocation) to ensure data protection during server
+##     failures. The reserved spare capacity of each pool is recommended to be at least
+##     equal to the amount of the capacity in the node containing the maximum capacity,
+##     or the maximum Fault Set capacity.
+##       If all nodes contain equal capacity, it is recommended to set the value of
+##     sparePercentage to at least 1/N of the total. (N is the number of SDS nodes.)
+##       For example, for three SDSs the sparePercentage must be 34 for each defined
+##     pool to avoid the alarm about insufficient space reservation.
+##     Mandatory.
+##     - mediatype: Storage pool configuration parameter.
+##     Optional for embedded VxSDS, not applicable for shared VxSDS.
+##       Possible values:
+##       HDD - All devices in this storage pool will be HDDs.
+##       SSD - All devices in this storage pool will be SSDs.
+##       Default value of mediatype is SSD.
+##     - volumeTypes: list of volume types that to be for the pool.
+##     Currently not used, however it might change in the future, and will be used for
+##     automated volume type creation.
+##
+##       Attributes of volumeTypes[]:
+##
+##       - name: name of the volume type
+##       - provisioningType: Possible values: ( thin | thick )
+---
+vxsds:
+  clusters:
+  ## In the item below VxSDS server services should be configured.
+  ## (this is reflected in `ceeManaged: full` setting)
+  ##
+  ## To have fully operational VxSDS, there should also be VxSDS clients in the system that use
+  ## this server. In CEE there are two (inclusive) options how the VxSDS clients can be deployed:
+  ## Opt.1: deploy the client to a CEE cluster that is different from what VxSDS server is deployed to
+  ##   In this case, modify files under services/vxsds_client to configure VxSDS client service to access this VxSDS server
+  ##   From the client perspective this is "shared" VxSDS server model.
+  ## Opt.2: deploy the VxSDS client and server together, in the same CEE cluster
+  ##   From the client perspective this is "embedded" VxSDS server model.
+  ##   In this case, the configuration below is also eligible for configuring VxSDS client service in the cluster.
+  ## See description for configurationData for openstack and vxsds cluster in cluster.yaml for more information.
+  - name: vxsds_full_openstack
+    ceeManaged: full
+
+    password: Ericsson@123
+    gatewayUser: admin
+    gatewayAdminPassword: Ericsson@123
+    gatewayPort: 4443
+    gatewayBePorts:
+      ssl: 4445
+      http: 81
+    frontendNetworks: ['vxsds-fe-ipv4']
+    backendNetworks: ['vxsds-be-ipv4']
+    managementNetwork: cee-ipv4
+    snmp:
+     ## send VxSDS alarms as SNMP traps
+     enabled: false
+     ## set this below to override SA cluster as target address
+#      trapsReceiverIp: <list of max. two IP addresses>
+     ## set this below to override SA cluster's target port
+#      trapsReceiverPort: 162
+    users:
+    - name: cinder
+      pwd: Ericsson@123
+      role: FrontendConfig
+    - name: admin
+      pwd: Ericsson@123
+      role: FrontendConfig
+    protectionDomains:
+    - name: protection_domain1
+      pools:
+        - name: pool1
+          zeroPadding: disabled
+          sparePercentage: 33
+          volumeTypes:
+            - name: vxsds_type1
+              mediatype: HDD
+              provisioningType: thin
+            - name: vxsds_type2
+              mediatype: HDD
+              provisioningType: thick
+...

@@ -1,0 +1,1855 @@
+########################################################################################
+## Configuration file with the host networking information                             #
+########################################################################################
+##
+########################################################################################
+## List of Network Interface Schemes for different purposes, e.g. lcm, control, data,
+## storage.
+## In most cases, the Network Interface Schemes can be used as is. Thus, normally, there
+## is no need to update the Network Interface Schemes. Each Network Interface Scheme
+## includes a list of Network Interfaces. Each Network Interface can contain the
+## following attributes:
+## - name (Mandatory): The name of the Network Interface.
+##
+## - type (Mandatory): Type of the network interface (port, bond, bridge, patch, vlan or
+## passthrough).
+##
+## - sourceInterface (Optional): The source/parent interface of a network interface of
+## type vlan. A network interface of type port that is configured in the same network
+## interface list.
+##
+## - assignIp (Optional): If an IP address shall be automatically assigned, this
+## attribute shall be set to a subnet name that is defined under the network key. In
+## that case Host Networking will automatically assign an IP address from that subnet.
+## The default is to not automatically assign the IP address, meaning that if the
+## assignIp attribute is not present for a Network Interface, the IP address will not
+## be automatically assigned.
+## Not applicable for network interfaces of type passthrough for which the Host
+## Networking never assigns IP addresses.
+##
+## - provider (Mandatory except for network interfaces of type passthrough): Specifies
+## whether the provider of the network interface shall be Linux (linux), Open vSwitch
+## with kernel data plane (openvswitch) or Open vSwitch with DPDK data plane (ovsdpdk).
+##
+## - firewallZone (Mandatory): The CEE firewall zone.
+##
+## - mtu (Mandatory): The MTU value of the Network Interface. If needed, the MTU value
+## can be re-configured to align with specific needs/requiremnts of the networking
+## infrastructure used for the specific CEE deployment. Note that the MTU size of an
+## underlaying Network Interface need to be configured with an MTU size larger or equal
+## to the largest MTU size of all Network Interfaces on top of it.
+##
+## - network (Optional): Required if VLAN tagging is needed. The Network which this
+## Network Interface belongs to. Shall refer to a network name defined under the
+## network key.
+##
+## - bondProperties (Mandatory for Network Interfaces of type bond. Not applicable for
+## other Network Interface types.): Configuration of: mode, miimonInterval, upDelay,
+## downDelay, bondSlaves and lacpMode (in case of LAG/LACP). Bond mode
+## balance-slb is the default, it requires LAG/MLAG enabled on the switch ports.
+## Bond mode balance-tcp is one alternative to balance-slb. When used, also balanceTcpLBOutputAction
+## must be set to true to enable the new datapath action lb_output that avoids recirculation.
+## Bond Mode active-backup must be used when LAG/MLAG is not configured/supported in the switches
+## like it is for traffic interfaces in Ericsson BSP or normally for all control interfaces.
+## primaryInterface and primaryReselect are applicable on Linux bond interfaces (provider: linux).
+## primaryInterface, upDelay, downDelay to be used only if the switching infrastructure requires it.
+## The value of primaryInterface is the name of the bond member that will be used with
+## the primary option in Linux bond. For example primaryInterface: control0.
+## primaryReselect specifies the reselection policy for the primary member.
+## For more information check the Linux Ethernet Bonding Driver documentation.
+##
+## - bridgedInterfaces (Mandatory for Network Interfaces of type bridge. Not applicable
+## for other Network Interface types.): Specifies the network interfaces connected to the
+## bridge.
+##
+## - patchedBridges (Mandatory for Network Interfaces of type patch. Not applicable
+## for other Network Interface types.): Specifies the bridges connected togehter with
+## the configured patch. For each patched bridge, the name of the bridge and a tag
+## is specified. To associate the pacthed bridge interface with a tag, the tag key shall
+## refer to a network name listed under the networks key (in networks.yaml). If no
+## tag is to be associated with the patched bridge interface, tag shall be set to 0.
+##
+## - ovs_phys_pmd_profile (Mandatory when type is port, provider is ovsdpdk and an
+## ovs_phys_pmd port profile is specified in the css flavor used for the host. Not
+## applicable otherwise): Reference to a port profile under
+## serviceComponentFlavors.customProperties.ovs_phys_pmd, specifying which PMD CPUs
+## the corresponding physical port RX queues will be pinned to.
+##
+## - options.dpdk-lsc-interrupt (Optional): When set to true Link State Change (LSC)
+## information from the NIC is retrieved by interrupt. If set to false LSC is retrieved
+## by polling.
+##
+## - options.n_rxq (Optional): Sets the number of rx queues for
+## DPDK physical interface. The rx queues are assigned to pmd threads on the same
+## NUMA node in a round-robin fashion. When Cross NUMA polling is used, which is the
+## default setup in this template, the number of rx queues is set to the total
+## number of PMD threads on both NUMA nodes. The number of PMD threads is defined
+## by the number of CPUs and CPU siblings dedicated to PMD threads. This is
+## configured under serviceComponentFlavors.customProperties.ovs_pmd and
+## serviceComponentFlavors.customProperties.ovs_pmd_ht keys (flavors.yaml).
+## For more information and information on alternative setups, please refer to
+## CSS documentation.
+##
+## - options.n_rxq_desc/n_txq_desc (optional): DPDK Physical Port Queue Sizes.
+## Sets the number of rx/tx descriptors that the NIC associated with
+## the port will be initialized with. Different n_rxq_desc and n_txq_desc configurations
+## yield different benefits in terms of throughput and latency for different scenarios.
+## Generally, smaller queue sizes can have a positive impact for latency at the
+## expense of throughput. The opposite is often true for larger queue sizes.
+## Note: increasing the number of rx descriptors e.g. to 4096 may have a negative impact
+## on performance due to the fact that non-vectorized DPDK rx functions may be used.
+## This is dependent on the driver in use, but is true for the commonly used i40e and
+## ixgbe DPDK drivers.
+##
+## - physicalNetwork (Mandatory for interfaces of type passthrough): Physical Network
+## associated with the passthrough port. This Physical Network shall refer to a
+## Physical Network specified under the physicalNetworks key (physicalNetworks.yaml).
+##
+## - vf_count (Mandatory for interfaces of type passthrough that are supposed to be
+## used for SR-IOV): Number of Virtual Functions (VFs) of the Passthrough interface
+## reserved for SR-IOV usage.
+########################################################################################
+---
+interfaceSchemes:
+    ## Network Interface Scheme for virtual LCM host.
+  - name: lcm
+    ## List defining Network Interfaces and their relations.
+    networkInterfaceList:
+      - name: lcm
+        assignIp:
+          - lcm-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: control
+        assignIp:
+          - cee-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ## If no separate Out Of Band Management is needed, e.g. on BSP or systems
+        ## using SDI Manager, the oobm section below should be commented out.
+#      - name: oobm
+#        assignIp:
+#          - oobm-ipv4
+#        type: port
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+        ## It is possible to configure multiple OOBM networks in a CEE deployment.
+        ## The example below shows the configuration applicable for one additional OOBM network.
+      - name: data
+        assignIp:
+          - lcm-om-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        # When DPDK is used on underlaying host then tx-checksumming must be turned off.
+        # Supported values of txChecksumming: on|true|off|false
+        txChecksumming: off
+      - name: gluster
+        assignIp:
+          - gluster-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+    ## Network Interface Scheme for the virtual Infra host.
+  - name: infra
+    networkInterfaceList:
+      - name: lcm
+        assignIp:
+          - lcm-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: control
+        assignIp:
+          - cee-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ## If no separate Out Of Band Management is needed, e.g. on BSP or systems
+        ## using SDI Manager, the oobm section below should be commented out.
+#      - name: oobm
+#        assignIp:
+#          - oobm-ipv4
+#        type: port
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+        ## It is possible to configure multiple OOBM networks in a CEE deployment.
+        ## The example below shows the configuration applicable for one additional OOBM network.
+#      - name: oobm1
+#        assignIp:
+#          - oobm-ipv4_1
+#        type: port
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+      - name: data
+        assignIp:
+          - lcm-om-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        # When DPDK is used on underlaying host then tx-checksumming must be turned off.
+        # Supported values of txChecksumming: on|true|off|false
+        txChecksumming: off
+      - name: gluster
+        assignIp:
+          - gluster-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+  - name: vxsds_frontend
+    networkInterfaceList:
+      - name: vxsds_fe0
+        assignIp:
+          - vxsds-fel-ipv4
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: vxsds_fe_san_pda
+  - name: vxsds_backend
+    networkInterfaceList:
+      - name: vxsds_be0
+        assignIp:
+          - vxsds-bel-ipv4
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: vxsds_be_san_pda
+    # This might not be needed since OOBM could be mandatory for upgrade cases on SiSe as well
+    # and then the below infra_nonha will be used in SiSe as well
+    ## Network Interface Scheme for virtual OpenStack Network host.
+  - name: vnetworkhost
+    networkInterfaceList:
+      - name: lcm
+        assignIp:
+          - lcm-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: control
+        assignIp:
+          - cee-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: br_prv
+        type: bridge
+        provider: openvswitch
+        firewallZone: cee
+        mtu: 1500
+      - name: br_ex
+        type: bridge
+        provider: openvswitch
+        firewallZone: cee
+        mtu: 1500
+      - name: data
+        type: port
+        firewallZone: cee
+        provider: openvswitch
+        bridge: br_prv
+      - name: exter
+        type: port
+        firewallZone: cee
+        provider: openvswitch
+        bridge: br_ex
+    ## Network Interface Scheme for virtual Service Assurance host.
+  - name: vserviceassurance
+    networkInterfaceList:
+      - name: lcm
+        assignIp:
+          - lcm-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: control
+        assignIp:
+          - cee-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: data
+        assignIp:
+          - lcm-om-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+    ## Network Interface Scheme for virtual Cloud SDN Controller (CSC) host.
+  - name: csc
+    networkInterfaceList:
+      - name: lcm
+        assignIp:
+          - lcm-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: control
+        assignIp:
+          - cee-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: sdn_sbi
+        assignIp:
+          - sdnc-sbi-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+      - name: sdn_int
+        assignIp:
+          - sdnc-internal-ipv4
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+    ## Network Interface Scheme for Control network connectivity on physical host.
+  - name: control
+    networkInterfaceList:
+      - name: control0
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ringBuffer:
+          size: max
+          count: max
+      - name: control1
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ringBuffer:
+          size: max
+          count: max
+      - name: bond_lcm_ctrl
+        type: bond
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: control0
+            - name: control1
+      - name: br_lcm_ctrl
+        assignIp:
+          - lcm-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: bond_lcm_ctrl
+      - name: cee0
+        type: vlan
+        sourceInterface: control0
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        network: cee_ctrl_sp
+      - name: cee1
+        type: vlan
+        sourceInterface: control1
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        network: cee_ctrl_sp
+      - name: bond_cee_ctrl
+        type: bond
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: cee0
+            - name: cee1
+      - name: br_cee_ctrl
+        assignIp:
+          - cee-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: bond_cee_ctrl
+    ## Network Interface Scheme for Non Redundant Control network connectivity on physical host.
+  - name: control_nonredundant
+    networkInterfaceList:
+      - name: control0
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: max
+      - name: br_lcm_ctrl
+        assignIp:
+          - lcm-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: control0
+      - name: cee0
+        type: vlan
+        sourceInterface: control0
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        network: cee_ctrl_sp
+      - name: br_cee_ctrl
+        assignIp:
+          - cee-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: cee0
+    ## Network Interface Scheme for Out Of Band Management network
+    ## connectivity on physical host.
+#  - name: oobm
+#    networkInterfaceList:
+#      - name: oobm0
+#        type: vlan
+#        sourceInterface: control0
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        network: oobm_ctrl_sp
+#      - name: oobm1
+#        type: vlan
+#        sourceInterface: control1
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        network: oobm_ctrl_sp
+#      - name: bond_oobm_ctrl
+#        type: bond
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        bondProperties:
+#          mode: active-backup
+#          miimonInterval: 200
+#          bondSlaves:
+#            - name: oobm0
+#            - name: oobm1
+#      - name: br_oobm_ctrl
+#        type: bridge
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        bridgedInterfaces:
+#          - name: bond_oobm_ctrl
+    ## Network Interface Scheme for Non Redundant Out Of Band Management
+    ## network connectivity on physical host.
+#  - name: oobm_nonredundant
+#    networkInterfaceList:
+#      - name: oobm0
+#        type: vlan
+#        sourceInterface: control0
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        network: oobm_ctrl_sp
+#      - name: br_oobm_ctrl
+#        type: bridge
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        bridgedInterfaces:
+#          - name: oobm0
+        ## It is possible to configure multiple OOBM networks in a CEE deployment.
+        ## The example below shows the configuration applicable for one additional OOBM network.
+#  - name: oobm1
+#    networkInterfaceList:
+#      - name: oobm10
+#        type: vlan
+#        sourceInterface: control0
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        network: oobm_ctrl_sp_1
+#      - name: oobm11
+#        type: vlan
+#        sourceInterface: control1
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        network: oobm_ctrl_sp_1
+#      - name: bond_oobm_ctrl_1
+#        type: bond
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        bondProperties:
+#          mode: active-backup
+#          miimonInterval: 200
+#          bondSlaves:
+#            - name: oobm10
+#            - name: oobm11
+#      - name: br_oobm_ctrl_1
+#        type: bridge
+#        provider: linux
+#        firewallZone: cee
+#        mtu: 1500
+#        bridgedInterfaces:
+#          - name: bond_oobm_ctrl_1
+    ## Network Interface Scheme for LCM northbound OAM network
+    ## connectivity over Control NICs on physical hosts.
+  - name: lcm_om_on_control
+    networkInterfaceList:
+      - name: lcm0
+        type: vlan
+        sourceInterface: control0
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        network: lcm_om_sp
+      # - name: lcm1
+        # type: port
+        # sourceInterface: control1
+        # provider: linux
+        # firewallZone: cee
+        # mtu: 1500
+        # network: lcm_om_sp
+      # - name: bond_lcm_om
+        # type: bond
+        # provider: linux
+        # firewallZone: cee
+        # mtu: 1500
+        # bondProperties:
+          # mode: active-backup
+          # miimonInterval: 200
+          # bondSlaves:
+            # - name: lcm0
+            # - name: lcm1
+      - name: br_lcm_om
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: lcm0
+    ## Network Interface Scheme for Data network connectivity provided by
+    ## OVS kernel datapath on physical host.
+  - name: data_ovs
+    networkInterfaceList:
+      - name: data0
+        type: port
+        firewallZone: cee
+        provider: openvswitch
+      - name: data1
+        type: port
+        firewallZone: cee
+        provider: openvswitch
+      - name: bond_prv
+        type: bond
+        firewallZone: cee
+        provider: openvswitch
+        mtu: 2140
+        bridge: br_prv
+        bondProperties:
+          ## The bond mode must be set to active-backup when the switch ports are not configured
+          ## in LAG/MLAG, like for Ericsson BSP.
+          mode: balance-slb
+          miimonInterval: 100
+          lacpMode: passive
+          ## Set the speed of LACP operational mode.
+          lacpTime: fast
+          lacpSystemPriority: 1024
+          bondSlaves:
+            - name: data0
+            - name: data1
+      - name: br_prv
+        type: bridge
+        firewallZone: cee
+        mtu: 2140
+        provider: openvswitch
+    ## Network Interface Scheme for Non Redundant Data network connectivity
+    ## provided by OVS kernel datapath on physical host.
+  - name: data_ovs_nonredundant
+    networkInterfaceList:
+      - name: data0
+        type: port
+        bridge: br_prv
+        firewallZone: cee
+        provider: openvswitch
+      - name: br_prv
+        type: bridge
+        firewallZone: cee
+        mtu: 1500
+        provider: openvswitch
+    ## Network Interface Scheme for br-prv part of the Data network connectivity provided by
+    ## OVS dpdk datapath on physical host. Different data_dpdk_br_prv Network Interface Schemes
+    ## can be created to for example divide the set of Hosts in one set controlled by SDN and
+    ## another one controlled by the openvswitch agent. Another use case could be to create
+    ## different data_dpdk_br_prv Network Interface Schemes to configure different
+    ## bandwidth capacity for vSwitches on different Hosts. See more information below.
+  - name: data_dpdk_br_prv
+    networkInterfaceList:
+      - name: br_prv
+        type: bridge
+        ## Uncomment the below assignIp attribute in CSC based deployment
+#        assignIp:
+#          - sdn-ul-ipv4-1
+        firewallZone: cee
+        mtu: 1500
+        provider: ovsdpdk
+        ## Uncomment the below network attribute in CSC based deployment
+#        network: sdn_ul
+        ##Fail mode shall normally not be set to secure for bridge br-prv.
+        ##This is the case for deployments where the neutron-openvswitch-agent
+        ##is used for managing the vSwitch as well as for deployments including
+        ##the Ericsson CSC SDN controller, that is, in these types of deployments,
+        ##the secure fail mode is not needed and shall not be configured.
+        ##There might however be deployments using other types of SDN controllers
+        ##requiring Fail mode to to be set to secure. If so, uncomment the line below.
+#        failMode: secure
+        ## Physical network to be configured in case another Physical Network than the default
+        ## is wanted for OVS. A use case could be for deployments where OVS on some hosts are
+        ## supposed to be controlled by SDN, while OVS on other hosts are supposed to be
+        ## controlled by the openvswitch agent. In such deployments, it is recommended to
+        ## create one data_dpdk_br_prv Network Interface Scheme for SDN controlled OVS and
+        ## another one for openvswitch agent controlled OVS.
+        physicalNetwork: default
+        ## Optional packet rate configuration for Guaranteed minimum bandwidth feature.
+        ## The Ingress and Egress directions refer to the perspective of a cloud server (VM).
+        ## That is egress = cloud server upload, ingress = download.
+        ## The Egress and ingress bandwidth values are in kilobit/sec (kbps) and configures
+        ## the total egress and ingress bandwidth capacity that the br-prv can provide.
+#        ingressBandwidth: <TO.BE.FILLED>
+#        egressBandwidth: <TO.BE.FILLED>
+#        other_config:
+#          - mac-aging-time: <TO.BE.FILLED>
+            ## For CEE deployments without the Neutron Open vSwitch agent, such as deployments using
+            ## SDN as networking backend, the MAC table size can be configured by this attribute.
+            ## Not applicable in CEE deployments including the Neutron Open vSwitch agent.
+            ## In such deployments the MAC table size is configured by the bridge_mac_table_size
+            ## attribute in the Neutron openvswitch_agent.ini configuration file.
+#          - mac-table-size: <TO.BE.FILLED>
+    ## Network Interface Scheme for common parts of Non Redundant Data network connectivity
+    ## provided by OVS dpdk datapath on physical host.
+  - name: data_dpdk_common
+    networkInterfaceList:
+      - name: data0
+        type: port
+        provider: ovsdpdk
+        ## Reference to a port profile under serviceComponentFlavors.customProperties.ovs_phys_pmd.
+        ## Specifies what PMD CPUs to be used for pinning RX queues of this physical port.
+#        ovs_phys_pmd_profile: profile0
+        options:
+            ## HPE blade c7000 servers must set this to false, thereby setting it to polling mode.
+          - dpdk-lsc-interrupt: false
+            ## Number of RX queues for the physical ports. When Cross NUMA polling is used,
+            ## which is the default setup in this template, the number of rx queues is set
+            ## to the total number of PMD threads on both NUMA nodes. The number of PMD
+            ## threads is defined by the number of CPUs and CPU siblings dedicated to
+            ## PMD threads. This is configured under:
+            ## serviceComponentFlavors.customProperties.ovs_pmd and
+            ## serviceComponentFlavors.customProperties.ovs_pmd_ht keys (flavors.yaml).
+            ## Check CSS documentation before changing this value.
+          - n_rxq: 8
+            ## Number of rx/tx descriptors that the NIC associated with the port will
+            ## be initialized with. Please check CSS documentation before changing this value.
+            ## The max value is 4096.
+            ## Note: increasing the number of rx descriptors e.g. to 4096 may have a negative impact
+            ## on performance due to the fact that non-vectorized DPDK rx functions may be used.
+          - n_rxq_desc: 2048
+          - n_txq_desc: 2048
+        other_config:
+            ## Cross Numa Polling allows a port's RX queues to be polled by non-local NUMA PMD
+            ## threads. Before updating these attributes, please consult CSS documentation.
+          - cross-numa-polling: true
+      - name: data1
+        type: port
+        provider: ovsdpdk
+        ## Reference to a port profile under serviceComponentFlavors.customProperties.ovs_phys_pmd.
+        ## Specifies what PMD CPUs to be used for pinning RX queues of this physical port.
+#        ovs_phys_pmd_profile: profile1
+        options:
+            ## HPE blade c7000 servers must set this to false, thereby setting it to polling mode.
+          - dpdk-lsc-interrupt: false
+            ## Number of RX queues for the physical ports. When Cross NUMA polling is used,
+            ## which is the default setup in this template, the number of rx queues is set
+            ## to the total number of PMD threads on both NUMA nodes. The number of PMD
+            ## threads is defined by the number of CPUs and CPU siblings dedicated to
+            ## PMD threads. This is configured under:
+            ## serviceComponentFlavors.customProperties.ovs_pmd and
+            ## serviceComponentFlavors.customProperties.ovs_pmd_ht keys (flavors.yaml).
+            ## Check CSS documentation before changing this value.
+          - n_rxq: 8
+            ## Number of rx/tx descriptors that the NIC associated with the port will
+            ## be initialized with. Please check CSS documentation before changing this value.
+            ## The max value is 4096.
+            ## Note: increasing the number of rx descriptors e.g. to 4096 may have a negative impact
+            ## on performance due to the fact that non-vectorized DPDK rx functions may be used.
+          - n_rxq_desc: 2048
+          - n_txq_desc: 2048
+        other_config:
+            ## Cross Numa Polling allows a port's RX queues to be polled by non-local NUMA PMD
+            ## threads. Before updating these attributes, please consult CSS documentation.
+          - cross-numa-polling: true
+      - name: bond_prv
+        type: bond
+        provider: ovsdpdk
+        mtu: 2140
+        bridge: br_prv
+        bondProperties:
+           ## The bond mode must be set to active-backup when the switch ports are not configured
+           ## in LAG/MLAG, like for Ericsson BSP.
+          mode: balance-slb
+           ## The 'bond_updelay' and 'bond_downdelay' parameters specify the number of milliseconds
+           ## to wait before either enabling or disabling a slave after a failure has been detected.
+#          downDelay: 200
+#          upDelay: 200
+          miimonInterval: 100
+          lacpMode: passive
+          ## Set the speed of LACP operational mode.
+          lacpTime: fast
+          lacpSystemPriority: 1024
+          bondSlaves:
+            - name: data0
+            - name: data1
+    ## Network Interface Scheme for br-prv part of the Non Redundant Data network connectivity provided by
+    ## OVS dpdk datapath on physical host.
+  - name: data_dpdk_br_prv_nonredundant
+    networkInterfaceList:
+      - name: br_prv
+        type: bridge
+        firewallZone: cee
+        mtu: 2140
+        provider: ovsdpdk
+        ## Physical network to be configured in case another Physical Network than the default
+        ## is wanted for OVS. A use case could be for deployments where OVS on some hosts are
+        ## supposed to be controlled by SDN, while OVS on other hosts are supposed to be
+        ## controlled by the openvswitch agent. In such deployments, it is recommended to
+        ## create one data_dpdk_br_prv Network Interface Scheme for SDN controlled OVS and
+        ## another one for openvswitch agent controlled OVS.
+        physicalNetwork: default
+        ## Optional packet rate configuration for Guaranteed minimum bandwidth feature.
+        ## The Ingress and Egress directions refer to the perspective of a cloud server (VM).
+        ## That is egress = cloud server upload, ingress = download.
+        ## The Egress and ingress bandwidth values are in kilobit/sec (kbps) and configures
+        ## the total egress and ingress bandwidth capacity that the br-prv can provide.
+#        ingressBandwidth: <TO.BE.FILLED>
+#        egressBandwidth: <TO.BE.FILLED>
+#        other_config:
+#          - mac-aging-time: <TO.BE.FILLED>
+            ## For CEE deployments without the Neutron Open vSwitch agent, such as deployments using
+            ## SDN as networking backend, the MAC table size can be configured by this attribute.
+            ## Not applicable in CEE deployments including the Neutron Open vSwitch agent.
+            ## In such deployments the MAC table size is configured by the bridge_mac_table_size
+            ## attribute in the Neutron openvswitch_agent.ini configuration file.
+  - name: data_dpdk_common_nonredundant
+    networkInterfaceList:
+      - name: data0
+        type: port
+        bridge: br_prv
+        provider: ovsdpdk
+        ## Reference to a port profile under serviceComponentFlavors.customProperties.ovs_phys_pmd.
+        ## Specifies what PMD CPUs to be used for pinning RX queues of this physical port.
+        ovs_phys_pmd_profile: profile0
+        options:
+          - dpdk-lsc-interrupt: false
+            ## Number of RX queues for the physical ports. When Cross NUMA polling is used,
+            ## which is the default setup in this template, the number of rx queues is set
+            ## to the total number of PMD threads on both NUMA nodes. The number of PMD
+            ## threads is defined by the number of CPUs and CPU siblings dedicated to
+            ## PMD threads. This is configured under:
+            ## serviceComponentFlavors.customProperties.ovs_pmd and
+            ## serviceComponentFlavors.customProperties.ovs_pmd_ht keys (flavors.yaml).
+            ## Check CSS documentation before changing this value.
+          - n_rxq: 3      
+            ## Number of rx/tx descriptors that the NIC associated with the port will
+            ## be initialized with. Please check CSS documentation before changing this value.
+            ## The max value is 4096.
+            ## Note: increasing the number of rx descriptors e.g. to 4096 may have a negative impact
+            ## on performance due to the fact that non-vectorized DPDK rx functions may be used.
+          - n_rxq_desc: 2048
+          - n_txq_desc: 2048
+        other_config:
+            ## Cross Numa Polling allows a port's RX queues to be polled by non-local NUMA PMD
+            ## threads. Before updating these attributes, please consult CSS documentation.
+          - cross-numa-polling: true
+    ## Network Interface Scheme with Northbound OAM connectivity on physical host with DPDK OVS
+  - name: cee_om
+    networkInterfaceList:
+      - name: br_cee_om
+        assignIp:
+          - cee-om-ipv4
+        type: bridge
+        mtu: 1500
+        provider: openvswitch
+        firewallZone: cee
+      - name: cee_om_patch
+        type: patch
+        mtu: 1500
+        provider: openvswitch
+        firewallZone: cee
+        patchedBridges:
+          - name: br_cee_om
+          - name: br_prv
+            network: cee_om_sp
+    ## Network Interface Scheme providing Northbound LCM connectivity on physical host with DPDK OVS
+  - name: lcm_om
+    networkInterfaceList:
+      - name: br_lcm_om
+        type: bridge
+        mtu: 1500
+        provider: ovsdpdk
+        firewallZone: cee
+        network: lcm_om_sp
+      - name: lcm_om_patch
+        type: patch
+        mtu: 1500
+        provider: ovsdpdk
+        firewallZone: cee
+        patchedBridges:
+          - name: br_lcm_om
+          - name: br_prv
+            network: lcm_om_sp
+    ## Network Interface Scheme with Northbound LCM connectivity on physical host with kernel OVS.
+  - name: lcm_om_ovs
+    networkInterfaceList:
+      - name: br_lcm_om
+        assignIp:
+          - lcm-om-ipv4
+        type: bridge
+        mtu: 1500
+        provider: openvswitch
+        firewallZone: cee
+      - name: lcm_om_patch
+        type: patch
+        mtu: 1500
+        provider: openvswitch
+        firewallZone: cee
+        patchedBridges:
+          - name: br_lcm_om
+          - name: br_prv
+            network: lcm_om_sp
+  - name: storage
+    networkInterfaceList:
+      - name: storage0
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: max
+      - name: storage1
+        type: port
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: max
+      - name: glance0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: glance_san_sp
+      - name: glance1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage1
+        network: glance_san_sp
+      - name: bond_glance
+        assignIp:
+          - glance-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: glance0
+            - name: glance1
+    ## Network Interface Scheme for Non Redundant Storage connectivity applicable
+    ## to all types of physical hosts.
+  - name: storage_nonredundant
+    networkInterfaceList:
+      - name: storage0
+        type: port
+        provider: linux
+        firewallZone: cee
+        # This must be set to 9000 if NexentaStor (nfs_san) is used
+        mtu: 1500
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: 8
+      - name: glance0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: glance_san_sp
+      - name: br_glance
+        assignIp:
+          - glance-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: glance0
+    ## Network Interface Scheme for Storage connectivity applicable to all
+    ## types of physical hosts in a system where there is no dedicated
+    ## network domain for storage and the network control domain is used
+    ## for storage
+  - name: storage_on_control
+    networkInterfaceList:
+      - name: glance0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: glance_san_sp
+      - name: glance1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control1
+        network: glance_san_sp
+      - name: bond_glance
+        assignIp:
+          - glance-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: glance0
+            - name: glance1
+    ## Network Interface Scheme for Storage connectivity applicable to all
+    ## types of physical hosts in a system where there is no dedicated
+    ## network domain for storage and the Non Redundant network control domain
+    ## is used for storage
+  - name: storage_on_control_nonredundant
+    networkInterfaceList:
+      - name: glance0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: glance_san_sp
+      - name: br_glance
+        assignIp:
+          - glance-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: glance0
+    ## Network Interface Scheme for Storage connectivity applicable to all
+    ## types of physical hosts for connectivity towards NexentaStor
+  - name: nfs_san
+    networkInterfaceList:
+      - name: nfs0
+        type: vlan
+        mtu: 9000
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: nfs_san_sp
+      - name: nfs1
+        type: vlan
+        mtu: 9000
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage1
+        network: nfs_san_sp
+      - name: bond_nfs
+        assignIp:
+          - nfs-san-ipv4
+        type: bond
+        mtu: 9000
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+          - name: nfs0
+          - name: nfs1
+    ## Network Interface Scheme for Non Redundant Storage connectivity
+    ## applicable to all types of physical hosts.
+  - name: nfs_san_nonredundant
+    networkInterfaceList:
+      - name: nfs0
+        type: vlan
+        mtu: 9000
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: nfs_san_sp
+      - name: br_nfs
+        assignIp:
+          - nfs-san-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 9000
+        bridgedInterfaces:
+          - name: nfs0
+    ## Network Interface Scheme for Storage connectivity applicable to
+    ## physical OpenStack Controller hosts.
+  - name: control_storage
+    networkInterfaceList:
+      - name: swift0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: swift_san_sp
+      - name: swift1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage1
+        network: swift_san_sp
+      - name: bond_swift
+        assignIp:
+          - swift-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: swift0
+            - name: swift1
+      - name: gluster0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: gluster_san_sp
+      - name: gluster1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage1
+        network: gluster_san_sp
+      - name: bond_gluster
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: gluster0
+            - name: gluster1
+      - name: br_gluster
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: bond_gluster
+    ## Network Interface Scheme for Non Redundant Storage connectivity
+    ## applicable to physical OpenStack Controller hosts.
+  - name: control_storage_nonredundant
+    networkInterfaceList:
+      - name: swift0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: swift_san_sp
+      - name: br_swift
+        assignIp:
+          - swift-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: swift0
+      - name: gluster0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: gluster_san_sp
+      - name: br_gluster
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: gluster0
+    ## Network Interface Scheme for Storage connectivity applicable to physical
+    ## OpenStack Controller hosts in a system where there is no dedicated
+    ## network domain for storage and the network control domain is used
+    ## for storage
+  - name: control_storage_on_control
+    networkInterfaceList:
+      - name: swift0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: swift_san_sp
+      - name: swift1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control1
+        network: swift_san_sp
+      - name: bond_swift
+        assignIp:
+          - swift-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: swift0
+            - name: swift1
+      - name: gluster0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: gluster_san_sp
+      - name: gluster1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control1
+        network: gluster_san_sp
+      - name: bond_gluster
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: gluster0
+            - name: gluster1
+      - name: br_gluster
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: bond_gluster
+    ## Network Interface Scheme for Storage connectivity applicable to physical
+    ## OpenStack Controller hosts in a system where there is no dedicated
+    ## network domain for storage and the Non Redundant network control domain
+    ## is used for storage
+  - name: control_storage_on_control_nonredundant
+    networkInterfaceList:
+      - name: swift0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: swift_san_sp
+      - name: br_swift
+        assignIp:
+          - swift-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: swift0
+      - name: gluster0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: gluster_san_sp
+      - name: br_gluster
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: gluster0
+    ## Network Interface Scheme for Storage connectivity applicable to
+    ## physical OpenStack Compute hosts.
+  - name: compute_storage
+    networkInterfaceList:
+      - name: migration0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: migration_san_sp
+      - name: migration1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage1
+        network: migration_san_sp
+      - name: bond_migration
+        assignIp:
+          - migration-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: migration0
+            - name: migration1
+    ## Network Interface Scheme for Non Redundant Storage connectivity
+    ## applicable to physical OpenStack Compute hosts.
+  - name: compute_storage_nonredundant
+    networkInterfaceList:
+      - name: migration0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: migration_san_sp
+      - name: br_migration
+        assignIp:
+          - migration-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: migration0
+    ## Network Interface Scheme for Storage connectivity applicable to physical
+    ## OpenStack Compute hosts in a system where there is no dedicated
+    ## network domain for storage and the network control domain is used
+    ## for storage
+  - name: compute_storage_on_control
+    networkInterfaceList:
+      - name: migration0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: migration_san_sp
+      - name: migration1
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control1
+        network: migration_san_sp
+      - name: bond_migration
+        assignIp:
+          - migration-ipv4
+        type: bond
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        bondProperties:
+          mode: active-backup
+          miimonInterval: 200
+          bondSlaves:
+            - name: migration0
+            - name: migration1
+    ## Network Interface Scheme for Storage connectivity applicable to physical
+    ## OpenStack Compute hosts in a system where there is no dedicated
+    ## network domain for storage and the Non Redundant network control domain
+    ## is used for storage
+  - name: compute_storage_on_control_nonredundant
+    networkInterfaceList:
+      - name: migration0
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: control0
+        network: migration_san_sp
+      - name: br_migration
+        assignIp:
+          - migration-ipv4
+        type: bridge
+        provider: linux
+        firewallZone: cee
+        mtu: 1500
+        bridgedInterfaces:
+          - name: migration0
+    ## Network Interface Scheme for Passthrough connectivity (SR-IOV and PF-PT).
+    ## This network scheme contains two passthrough interfaces. If another number
+    ## of passthrough is needed on an OpenStack compute host, another network interface
+    ## scheme can be created for that specific need.
+    ## If an Nvidia/Mellanox card will be used as a PF passthrough device
+    ## then the system needs to be installed with 'vf_count: 0'.
+  - name: passthrough
+    networkInterfaceList:
+      - name: pt0
+        mtu: 9000
+        type: passthrough
+        ## CEE supports up to 96 VFs per PF Physical Function. Note that certain network cards
+        ## might support lower maximum number of VFs per PF.
+        vf_count: 16
+        ## Configure a Physical Network to be associated with the passthrough port.
+        ## This Physical Network shall refer to a Physical Network specified under the
+        ## physicalNetworks key (physicalNetworks.yaml).
+        ## In case of NVIDIA(R) Network Interface Card (NIC) interfaces configured for passthrough,
+        ## separate physical networks must be configured for interfaces aimed at Physical Function
+        ## (PF) passthrough and interfaces aimed at Virtual Function (VF) passthrough respectively.
+        physicalNetwork: default
+        ## Optional Bandwidth Management Configuration Keywords. The Ingress and Egress
+        ## directions refer to  the perspective of a cloud server (VM).
+        ## That is egress = cloud server upload, ingress = download.
+        ## The Egress and ingress bandwidth values are in kilobit/sec (kbps) and configures
+        ## the total egress and ingress bandwidth capacity that the br-prv can provide.
+#        ingressBandwidth: <TO.BE.FILLED>
+#        egressBandwidth: <TO.BE.FILLED>
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          count: 1
+      # - name: pt1
+        # mtu: 9000
+        # type: passthrough
+        # CEE supports up to 96 VFs per PF Physical Function. Note that certain network cards
+        # might support lower maximum number of VFs per PF.
+        # vf_count: 16
+        # Configure a Physical Network to be associated with the passthrough port.
+        # This Physical Network shall refer to a Physical Network specified under the
+        # physicalNetworks key (physicalNetworks.yaml).
+        # In case of NVIDIA(R) Network Interface Card (NIC) interfaces configured for passthrough,
+        # separate physical networks must be configured for interfaces aimed at Physical Function
+        # (PF) passthrough and interfaces aimed at Virtual Function (VF) passthrough respectively.
+        # physicalNetwork: default
+        # Optional Bandwidth Management Configuration Keywords. The Ingress and Egress
+        # directions refer to  the perspective of a cloud server (VM).
+        # That is egress = cloud server upload, ingress = download.
+        # The Egress and ingress bandwidth values are in kilobit/sec (kbps) and configures
+        # the total egress and ingress bandwidth capacity that the br-prv can provide.
+       # ingressBandwidth: <TO.BE.FILLED>
+       # egressBandwidth: <TO.BE.FILLED>
+        # Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        # ringBuffer:
+          # count: 1
+    ## Network Interface Scheme for SmartVF connectivity on physical OpenStack Compute Hosts with
+    ## SmartNIC.
+  - name: data_ovs_kernel_nvidia_smartvf
+    networkInterfaceList:
+      - name: pt0
+        type: passthrough
+        physicalNetwork: default
+        vf_count: 16
+        mtu: 2140
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: max
+      - name: pt1
+        type: passthrough
+        physicalNetwork: default
+        vf_count: 16
+        mtu: 2140
+        ## Set physical interface ring buffer size with using an integer number or the 'max' string.
+        ## Set physical interface ring buffer count with using an integer number or the 'max' or 'auto' string.
+        ringBuffer:
+          size: max
+          count: max
+      - name: bond_prv
+        mtu: 2140
+        type: sn_bond
+        firewallZone: cee
+        provider: linux
+        bondProperties:
+          mode: 802.3ad
+          miimonInterval: 100
+          lacpRate: fast
+          xmitHashPolicy: layer3+4
+          bondSlaves:
+            - name: pt0
+            - name: pt1
+      - name: br_prv
+        type: bridge
+        firewallZone: cee
+        mtu: 2140
+        physInterface: bond_prv
+        provider: openvswitch
+    ## Network Interface Scheme for configuration of integration bridge. The usage
+    ## of the int_bridge configuration is dependent on the Neutron backend and might
+    ## be needed for example in some SDN deployments.
+  - name: int_bridge
+    networkInterfaceList:
+      - name: br-int
+        type: bridge
+        mtu: 2140
+        provider: openvswitch
+        firewallZone: cee
+        failMode: secure
+        options:
+          - external_ids:flow-restore=true
+        other_config:
+          - disable-in-band: true
+    ## Network Interface Scheme for configuration of patch port between integration bridge
+    ## and the private bridge. The need of this patch port is dependent on the Neutron backend
+    ## and might be needed for example in some SDN deployments.
+  - name: int_prv_patch_port
+    networkInterfaceList:
+      - name: br_int_patch
+        type: patch
+        mtu: 2140
+        provider: ovsdpdk
+        firewallZone: cee
+        patchedBridges:
+          - name: br-int
+          - name: br_prv
+    ## Network Interface Scheme for the L3 agent connectivity applicable to
+    ## physical OpenStack Compute hosts.
+  - name: neutron_l3_network_scheme
+    networkInterfaceList:
+      - name: br-ex
+        type: bridge
+        mtu: 1500
+        provider: openvswitch
+        firewallZone: cee
+        physicalNetwork: default
+      - name: l3_prv_patch
+        type: patch
+        mtu: 1500
+        patchedBridges:
+        - name: br-ex
+        - name: br_prv
+        provider: openvswitch
+        firewallZone: cee
+    ##
+    ## Network Interface Scheme for VxSDS storage connectivity.
+    ## VxSDS uses interfaces on Frontend and Backend networks.
+    ## There are two recommended options for creating these interfaces:
+    ##
+    ## Option1: VxSDS supports Path Diversity, so create two interfaces, each on a separate network and on
+    ##          separate sourceInterface for Frontend (or/and Backend) communication.
+    ##          This is a common setup for setting VxSDS Frontend and Backend communication.
+    ##
+    ## Option2: Create two interfaces and bond them in one network (Split Plane), add a bride on bond, and
+    ##          create interface on the bridge for Frontend (or/and Backend) communication.
+    ##
+    ## Option1 and Option2 can be combined.
+    ## Any number of Frontend (and/or Backend) network interfaces can be created for VxSDS
+    ##
+
+    ## Option1: interface scheme with Path Diversity (PDA, PDB) for Frontend network
+  - name: vxsds_frontend_nonredundant
+    networkInterfaceList:
+      - name: vxsds_fe
+        assignIp:
+          - vxsds-fe-ipv4
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: vxsds_fe_san_sp
+  - name: vxsds_backend_nonredundant
+    networkInterfaceList:
+      - name: vxsds_be
+        assignIp:
+          - vxsds-be-ipv4
+        type: vlan
+        mtu: 1500
+        provider: linux
+        firewallZone: cee
+        sourceInterface: storage0
+        network: vxsds_be_san_sp
+################################################################################################
+## List of global OVS configurations adapted to the need of different types of hosts.
+## - name (Mandatory): Name of the OVS Configuration.
+################################################################################################
+ovsConfigurations:
+    ## Global OVS configurations for CSS.
+  - name: css
+    ovsConfig:
+      ## Optional packet rate configuration for Guaranteed minimum bandwidth feature.
+      ## The maximum packet rate that the Open vSwitch can support in both directions,
+      ## that is the total aggregated Egress and Ingress packet rate. The unit is kilo packets
+      ## per second (kpps).
+#      packetProcessingCapacity: <TO.BE.FILLED>
+      other_config:
+          ## Periodic check if a PMD is marked overloaded. If PMD load exceeds 95% for
+          ## six consecutive 10s intervals, the PMD is considered overloaded. If yes,
+          ## a dry run is performed to check if an rx queue distribution with significant
+          ## improved load balance (25% lower variance) is possible. If yes, a queue
+          ## re-assignment is done. Rebalancing is avoided if there is no need
+          ## (no PMD overloaded) or the potential gain is too small (all PMDs similarly
+          ## highly loaded). Before updating these attributes, please consult CSS
+          ## documentation.
+        - pmd-auto-lb: true
+        - pmd-auto-lb-rebal-interval: 5
+          ## By default PMD threads on cores where Rx queues are pinned will become isolated.
+          ## Boolean argument specifies whether the PMD threads are isolated to pinned queues.
+          ## Before updating this attribute, please consult CSS documentation.
+        - pmd-rxq-isolate: false
+          ## The allowed values for the pmd-rxq-assign switch option are:
+          ## roundrobin: default, legacy value, distribute rqxs round robin over PMDs
+          ##             not considering load
+          ## cycles: legacy value: distribute rxqs round robin over PMDs in descending load order
+          ## group: distribute rxqs according to their load to optimize the PMD load balance
+        - pmd-rxq-assign: group
+          ## The tx-flush-interval parameter can be used to specify the time in microseconds
+          ## OVS should wait between two send bursts to a given port. When the intermediate
+          ## queue fills up before that time is over, the buffered packet batch is sent
+          ## immediately. This parameter influences both throughput and latency, depending
+          ## on the traffic load on the port. In general lower values decrease latency, while
+          ## higher values may be useful to achieve higher throughput. The value 0 means that
+          ## the feature is disabled. This feature is ideally more beneficial for VM's with
+          ## Kernel mode polling to avoid inefficient performance due to virtio interrupt driven
+          ## packet processing. The feature is not so beneficial for DPDK based VMs, as it adds
+          ## additional latency as well to the packets.Before updating this attributes, please
+          ## consult CSS documentation.
+#        - tx-flush-interval: 0
+          ## Vhost IOMMU is a feature which restricts the vhost memory that a virtio device
+          ## can access, and as such is useful in deployments in which security is a concern.
+          ## The tenant can improve the performance utilizing the vIOMMU while a host-level
+          ## restriction ensures that an occasional guest failure won't affect those IO memory
+          ## areas which are not intended/allowed to the particular guest. This prevention
+          ## ensures host-guest and inter-guest protection in the order of milliseconds.
+          ## Before updating this attribute, please consult CSS documentation.
+#        - vhost-iommu-support: false
+          ## Configuring the inverse probability of insertion into the EMC, that is, N as an
+          ## integer argument means that the insertion probability is 1/N, that is, 1 in
+          ## every N flows is inserted into the EMC. If set to 0, no insertions will be
+          ## performed and the EMC will effectively be disabled. Before updating this attribute,
+          ## please consult CSS documentation.
+        - emc-insert-inv-prob: 0
+          ## Boolean argument specifies whether the SMC is enabled. Before updating this
+          ## attribute, please consult CSS documentation.
+        - smc-enable: true
+          ## Additional OVS global configuration key value pairs. Please check
+          ## CSS documenation carefully before making changes to any attributes.
+#        - <OVS global config parameter>: '<value>'
+    ## Global OVS configurations for kernel OVS with smartVF offload.
+  - name: smartVF_offload
+    ovsConfig:
+      ## Optional egress packet rate configuration for Guaranteed minimum bandwidth feature.
+      ## The maximum packet rate that the Open vSwitch can support in the egress direction.
+      ## The unit is kilo packets per second (kpps).
+#      egressPacketProcessingCapacity: <TO.BE.FILLED>
+      ## Optional ingress packet rate configuration for Guaranteed minimum bandwidth feature.
+      ## The maximum packet rate that the Open vSwitch can support in the ingress direction.
+      ## The unit is kilo packets per second (kpps).
+#      ingressPacketProcessingCapacity: <TO.BE.FILLED>
+      other_config:
+        - hw-offload: 'true'
+          ## Additional OVS global configuration key value pairs. Please check
+          ## OVS documenation carefully before making changes to any attributes.
+#        - <OVS global config parameter>: '<value>'
+################################################################################################
+## List of Network Interface Assignments adapted to the need of different types of hosts.
+## - name (Mandatory): Name of the Network Interface Assignment.
+##
+## - interfaceScheme (Mandatory): List of Network Interface Schemes to be used on the host.
+## Each member of the list refers to a network interface scheme defined under the
+## interfaceSchemes key.
+##
+## - ovsConfiguration (Optional): Reference to a global OVS configuration defined under the
+## ovsConfigurations key.
+##
+## - routes (Optional): List of routes to be configured for this type of host. Either IPv4 or
+## IPv6 routes can be configured. Both default routes and specific routes can be configured.
+## Each route is specified with a destination and a nextHop attribute. The default destination
+## can either be given as "default" or "0.0.0.0" (IPv4) or ::/0 (IPv6).
+################################################################################################
+interfaceAssignments:
+  - name: infra
+    interfaceScheme:
+      - infra
+    routes:
+        ## Default IPv4 route. Normally, the nextHop is the gateway IP of the lcm_om_ipv4 of the
+        ## lcm_om_sp network.
+      - destination: 0.0.0.0
+        nextHop: 10.33.211.181
+  - name: vnetwork
+    interfaceScheme:
+      - vnetworkhost
+    ## Network Interface Assignment for virtual Cloud SDN Controller (CSC) host.
+  - name: csc
+    interfaceScheme:
+      - csc
+    ## Network Interface Assignment for physical OpenStack Controller Host.
+  - name: control_infra
+    interfaceScheme:
+      - control_nonredundant
+      - data_ovs_nonredundant
+      - cee_om
+      - lcm_om_ovs
+      - storage_nonredundant
+      - neutron_l3_network_scheme
+      - control_storage_nonredundant
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Controller
+        ## host.
+      - vxsds_frontend_nonredundant
+      - vxsds_backend_nonredundant
+    ovsConfiguration: css
+    routes:
+        ## Default IPv4 route. Normally, the nextHop is the gateway IP of the cee_om_ipv4 of the
+        ## cee_om_sp network.
+      - destination: 0.0.0.0
+        nextHop: 10.33.211.129
+  - name: compute
+    interfaceScheme:
+      - control_nonredundant
+      - data_ovs_nonredundant
+      - storage_nonredundant
+      - compute_storage_nonredundant
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+      - vxsds_frontend_nonredundant
+      - vxsds_backend_nonredundant
+      - neutron_l3_network_scheme
+        ## Interface scheme for SDN controller southbound control connectivity to be used in
+        ## case when SDN is used in the deployment.
+      # - sdnc_sbi
+        ## In deployments where the neutron-openvswitch-agent is used for managing the vSwitch, the
+        ## int_bridge configuration is not needed and shall thus not be applied. The usage of the
+        ## int_bridge configuration is dependent of the Neutron backend and might be needed for
+        ## example in some SDN deployments.
+      # - int_bridge
+        ## The need for the int_prv_patch_port is dependent on the type of SDN backend. Note that
+        ## for certain SDN backends (eg: CSC), it is important to not enable the patch port.
+#      - int_prv_patch_port
+#      - sdi_agent
+    ovsConfiguration: css
+    ## In non-overlay deployments without SDN, there is normally no need to configure any specific
+    ## routes on the OpenStack Compute Hosts. That since the OpenStack Compute Hosts have no CEE
+    ## external connectivity and all internal communication is done using Layer 2 connectivity.
+    ## However in systems using overlay (like VXLAN) and SDN,there might be a need for configuring
+    ## routes on OpenStack Compute Hosts. If so, add needed needed routes here below. The routes
+    ## needed are dependent on the specific switch and SDN controller used in the deployment.
+#    routes:
+#      - destination: <TO.BE.FILLED>
+#        nextHop: <TO.BE.FILLED>
+    ## Network Interface Assignment for physical OpenStack Compute Host with Neutron L3 agent.
+  - name: compute_with_neutron_l3
+    interfaceScheme:
+      - control
+      - data_dpdk_common
+      - data_dpdk_br_prv
+      - storage
+      - compute_storage
+      - neutron_l3_network_scheme
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+#      - vxsds_frontend
+#      - vxsds_backend
+        ## In deployments where the neutron-openvswitch-agent is used for managing the vSwitch, the
+        ## int_bridge configuration is not needed and shall thus not be applied. The usage of the
+        ## int_bridge configuration is dependent of the Neutron backend and might be needed for
+        ## example in some SDN deployments.
+#      - int_bridge
+        ## The need for the int_prv_patch_port is dependent on the type of SDN backend. Note that
+        ## for certain SDN backends (eg: CSC), it is important to not enable the patch port.
+#      - int_prv_patch_port
+    ovsConfiguration: css
+    ## Network Interface Assignment for physical Compute OpenStack Host with passthrough ports.
+  - name: compute_passthrough
+    interfaceScheme:
+      - control
+      - data_dpdk_common
+      - data_dpdk_br_prv
+      - storage
+      - compute_storage
+      - passthrough
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+#      - vxsds_frontend
+#      - vxsds_backend
+        ## Interface scheme for SDN controller southbound control connectivity to be used in
+        ## case when SDN is used in the deployment.
+#      - sdnc_sbi
+        ## In deployments where the neutron-openvswitch-agent is used for managing the vSwitch, the
+        ## int_bridge configuration is not needed and shall thus not be applied. The usage of the
+        ## int_bridge configuration is dependent of the Neutron backend and might be needed for
+        ## example in some SDN deployments.
+#      - int_bridge
+        ## The need for the int_prv_patch_port is dependent on the type of SDN backend. Note that
+        ## for certain SDN backends (eg: CSC), it is important to not enable the patch port.
+#      - int_prv_patch_port
+    ovsConfiguration: css
+    ## In non-overlay deployments without SDN, there is normally no need to configure any specific
+    ## routes on the OpenStack Compute Hosts. That since the OpenStack Compute Hosts have no CEE
+    ## external connectivity and all internal communication is done using Layer 2 connectivity.
+    ## However in systems using overlay (like VXLAN) and SDN,there might be a need for configuring
+    ## routes on OpenStack Compute Hosts. If so, add needed needed routes here below. The routes
+    ## needed are dependent on the specific switch and SDN controller used in the deployment.
+#    routes:
+#      - destination: <TO.BE.FILLED>
+#        nextHop: <TO.BE.FILLED>
+    ## Network Interface Assignment for physical OpenStack Compute Host with passthrough ports and
+    ## Neutron L3 agent.
+  - name: compute_passthrough_with_neutron_l3
+    interfaceScheme:
+      - control
+      - data_dpdk_common
+      - data_dpdk_br_prv
+      - storage
+      - compute_storage
+      - neutron_l3_network_scheme
+      - passthrough
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+#      - vxsds_frontend
+#      - vxsds_backend
+        ## Interface scheme for SDN controller southbound control connectivity to be used in
+        ## case when SDN is used in the deployment.
+#      - sdnc_sbi
+        ## In deployments where the neutron-openvswitch-agent is used for managing the vSwitch, the
+        ## int_bridge configuration is not needed and shall thus not be applied. The usage of the
+        ## int_bridge configuration is dependent of the Neutron backend and might be needed for
+        ## example in some SDN deployments.
+#      - int_bridge
+        ## The need for the int_prv_patch_port is dependent on the type of SDN backend. Note that
+        ## for certain SDN backends (eg: CSC), it is important to not enable the patch port.
+#      - int_prv_patch_port
+    ovsConfiguration: css
+    ## Network Interface Assignment for physical OpenStack Compute Host with passthrough ports but
+    ## no vSwitch ports.
+  - name: compute_only_passthrough
+    interfaceScheme:
+      - control
+      - storage
+      - compute_storage
+      - passthrough
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+#      - vxsds_frontend
+#      - vxsds_backend
+    ## Network Interface Assignment for OpenStack Compute Host with SmartNIV providing SmartVF
+    ## connectivity.
+  - name: compute_switchdev
+    interfaceScheme:
+      - control
+      - storage
+      - compute_storage
+      - data_ovs_kernel_nvidia_smartvf
+        ## Mandatory interface needed for NexentaStor configuration. Make sure to use 9000
+        ## for the MTU in the storage interfaceSchemes when this is used
+#      - nfs_san
+        ## Interface schemes to be used in case an VxSDS is deployed on the OpenStack Compute
+        ## host.
+#      - vxsds_frontend
+#      - vxsds_backend
+        ## Interface scheme for SDN controller southbound control connectivity to be used in
+        ## case when SDN is used in the deployment.
+#      - sdnc_sbi
+        ## In deployments where the neutron-openvswitch-agent is used for managing the vSwitch, the
+        ## int_bridge configuration is not needed and shall thus not be applied. The usage of the
+        ## int_bridge configuration is dependent of the Neutron backend and might be needed for
+        ## example in some SDN deployments.
+#      - int_bridge
+        ## The need for the int_prv_patch_port is dependent on the type of SDN backend. Note that
+        ## for certain SDN backends (eg: CSC), it is important to not enable the patch port.
+#      - int_prv_patch_port
+    ovsConfiguration: smartVF_offload
+    ## In non-overlay deployments without SDN, there is normally no need to configure any specific
+    ## routes on the OpenStack Compute Hosts. That since the OpenStack Compute Hosts have no CEE
+    ## external connectivity and all internal communication is done using Layer 2 connectivity.
+    ## However in systems using overlay (like VXLAN) and SDN,there might be a need for configuring
+    ## routes on OpenStack Compute Hosts. If so, add needed needed routes here below. The routes
+    ## needed are dependent on the specific switch and SDN controller used in the deployment.
+#    routes:
+#      - destination: <TO.BE.FILLED>
+#        nextHop: <TO.BE.FILLED>
+    ## Network Interface Assignment for physical OpenStack Network Host.
+  - name: network
+    interfaceScheme:
+      - control
+      - data_dpdk_common
+      - data_dpdk_br_prv
+      - neutron_l3_network_scheme
+    ovsConfiguration: css
+...

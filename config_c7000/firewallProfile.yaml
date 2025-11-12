@@ -1,0 +1,54 @@
+#######################################################################################
+##  Configuration file with firewall profile of a host                                #
+#######################################################################################
+## firewallProfile: A list of profiles to add additional rules on hosts. A
+## certain firewall profile can be assigned to a spefici host by refering a
+## firewall profile name within the hostProfile(hostProfile.yaml).
+
+## Attributes of the firewallProfile key:
+## - name:  A human understandable name to be refered in host profile.
+## - enable: Enable firewall service on host or not. It doesn't aim to stop
+## running firewall service. The possible values are 'True'and 'False', 'True' by
+## default if not defined.
+## - customRules: Define a list of rules
+## - customRules.name: The name of rule which is part of iptables rule comment
+## - customeRules.direction: the direction to filter out packets. The possible values
+## are 'in' for inbhund direction and 'out' for outbound direction; ''in' by default
+## if not defined.
+## - customRules.source: The source addresses where the traffic is from. The possible
+## Values are 'address[/mask]' e.g: 192.168.0.10, 192.168.0.10/24. Note, source condition
+## should always be considered if possbile.
+## - customRules.destination. A list of destination networks where to open ports.
+## If source condition is used, max only one destination is supported.
+## - customRules.destination.address: Destination address. The possible values are
+## 'subnet name' defined in "networks.yaml", e.g: cee-ipv4 and 'address[/mask]'
+## e.g 192.168.0.11 192.168.0.10/24
+## - customRules.destination.type: Address to be used as destination when subnet name
+## is used.The possible Values are 'withoutvip' to only use subnet address, 'withvip' to
+## use both subnet address and vip address and 'viponly' to only use vip address.
+## By default, the value is "withoutvip".
+## - customRules.protocols: A list of protocols used for rule. The possible
+## values are 'tcp', 'udp','tcp,udp' for tcp and udp, 'icmp' and 'icmpv6'.
+## When the value is "icmp" or "icmpv6", it can't work with "ports" attribute.
+## - customeRules.ports: A list of ports to be opened. The possible values are Integer
+## Value between 1 and 65535, separated by comma if multiple values are given. This
+## parameter must work with "protocols" together.
+## - customRules.icmpType: The specified icmp type working with "icmp" or "icmpv6" protocol.
+## The possible Values can be listed in '/etc/protocols' e.g echo-request.
+## - customRule.target: The target action of rule. The possible values are 'ACCEPT'
+## and 'DROP', 'ACCEPT' by default if not defined.
+
+---
+firewallProfile:
+  - name: cee-default
+    enable: True
+    customRules:
+      - name: all-in-icmp
+        direction: in
+        protocols: icmp
+        target: ACCEPT
+      - name: all-out-icmp
+        direction: out
+        protocols: icmp
+        target: ACCEPT
+...

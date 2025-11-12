@@ -1,0 +1,41 @@
+#######################################################################################
+## Configuration file with LDAP settings                                              #
+#######################################################################################
+## - ldapConfig contains LDAP configuration settings
+##     suffix, DN that identifies the top entry in a directory hierarchy.(Root suffix)
+##     rootDn, Distinquished Name (DN) of the administrator account for this instance
+##     managerDn, Distinquished Name (DN) of the manager account for this instance
+## Note:  All the keys are optional in ldapConfig, non filled keys are configured with default values
+---
+ldapConfig:
+# suffix: <TO.BE.FILLED>
+# rootDn: <TO.BE.FILLED>
+# managerDn: <TO.BE.FILLED>
+externalLdapConfig:
+  keystone_ldap_config:
+#    - name: <TO.BE.FILLED>
+#      remote_server_name: <TO.BE.FILLED>
+#      remote_server_credential_name: <TO.BE.FILLED>
+#      suffix: <TO.BE.FILLED>
+#      user_id_attribute: <TO.BE.FILLED>
+#      user_name_attribute: <TO.BE.FILLED>
+#      user_objectclass: <TO.BE.FILLED>
+#      user_pass_attribute: <TO.BE.FILLED>
+#      user_tree_dn: <TO.BE.FILLED>
+#      group_desc_attribute: <TO.BE.FILLED>
+#      group_id_attribute: <TO.BE.FILLED>
+#      group_member_attribute: <TO.BE.FILLED>
+#      group_name_attribute: <TO.BE.FILLED>
+#      group_objectclass: <TO.BE.FILLED>
+#      group_tree_dn: <TO.BE.FILLED>
+  sssd_ldap_config:
+#    - name: <TO.BE.FILLED>
+#      suffix: <TO.BE.FILLED>
+#      remote_server_name: <TO.BE.FILLED>
+#      remote_server_credential_name: <TO.BE.FILLED>
+#      min-id: <TO.BE.FILLED>
+#      max-id: <TO.BE.FILLED>
+#      user_tree_dn: <TO.BE.FILLED>
+#      group_tree_dn: <TO.BE.FILLED>
+#      group_name_dn: <TO.BE.FILLED>
+#      is_ad: <TO.BE.FILLED>
