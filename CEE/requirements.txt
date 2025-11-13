@@ -1,0 +1,40 @@
+# CEE OpenStack Management Tools - Dependencies
+# Зависимости для работы с Ericsson Cloud Execution Environment
+
+# OpenStack SDK
+openstacksdk>=0.103.0
+
+# Запросы HTTP
+requests>=2.28.0
+urllib3>=1.26.0
+
+# YAML обработка
+PyYAML>=6.0
+
+# Логирование и утилиты
+python-dateutil>=2.8.0
+
+# ScaleIO/VxSDS SDK (опционально)
+# pyscaleio>=0.1.2
+# Примечание: pyscaleio может потребовать ручной установки или сборки
+
+# Для работы с сетями
+# netaddr>=0.8.0  # Для работы с IP адресами
+
+# Для мониторинга
+psutil>=5.9.0
+
+# JSON обработка (входит в стандартную библиотеку Python 3.7+)
+# json
+
+# Для работы с subprocess и системными командами
+# subprocess - встроенный модуль
+
+# Дополнительные утилиты
+typing-extensions>=4.0.0  # Для совместимости типов
+
+# Для разработки и тестирования (опционально)
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+# black>=22.0.0
+# flake8>=5.0.0
