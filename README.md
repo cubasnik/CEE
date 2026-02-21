@@ -9,3 +9,11 @@
 - [Архитектура и структура кода](documentations/ARCHITECTURE.md)
 - [API и эндпоинты](documentations/API.md)
 - [Roadmap](documentations/ROADMAP.md)
+
+## Current Status
+CEE is a Cloud Execution Environment - a lightweight hypervisor for virtual machine management.
+
+### Main Components:
+- LCM (Lifecycle Management) - core orchestrator
+- REST API for VM management
+- Drivers for virtualization backends (OpenStack, etc.)
