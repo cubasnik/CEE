@@ -20,8 +20,13 @@ htmlcov/
 # Database
 *.db
 *.sqlite3
+cee-lcm.db
 
 # Environment
 .env
 .env.*
 !.env.example
+
+# OS
+.DS_Store
+Thumbs.db
