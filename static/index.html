@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Менеджер Гипервизора (CEE) - ООО ЭрикссонСофт</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #006994 0%, #023b4a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .company-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .company-logo {
+            max-height: 30px;
+            width: auto;
+        }
+        
+        .company-name {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .tab.active {
+            background: white;
+            color: #006994;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .images-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .images-section h2 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #006994;
+            background: #f0f8ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: #e8f5e9;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .image-list {
+            margin-top: 20px;
+        }
+        
+        .image-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .image-item:last-child {
+            border-bottom: none;
+        }
+        
+        .image-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .image-name {
+            font-weight: 500;
+        }
+        
+        .image-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .image-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        
+        .badge-iso {
+            background: #ffd966;
+            color: #856404;
+        }
+        
+        .badge-qcow2 {
+            background: #b8daff;
+            color: #004085;
+        }
+        
+        .delete-image {
+            color: #dc3545;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .delete-image:hover {
+            background: #ffebee;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #006994, #023b4a);
+            transition: width 0.3s;
+            color: white;
+            font-size: 0.8em;
+            line-height: 20px;
+            padding-left: 10px;
+        }
+        
+        .create-vm {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .create-vm h2 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .form-labels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 3px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 8px 10px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            transition: border-color 0.3s;
+            background: white;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #006994;
+            box-shadow: 0 0 0 2px rgba(0,105,148,0.1);
+        }
+        
+        .file-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .file-selector input {
+            flex: 1;
+            background-color: #f9f9f9;
+        }
+        
+        .file-selector button {
+            background: #6c757d;
+            padding: 8px 15px;
+            white-space: nowrap;
+            color: white;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .file-selector button:hover {
+            background: #5a6268;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #006994 0%, #023b4a 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,105,148,0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .vms-list {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .vms-list h2 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        
+        th {
+            background: #f5f5f5;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #006994;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .state-running {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .state-stopped {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .action-btn {
+            background: #dc3545;
+            padding: 4px 10px;
+            font-size: 0.8em;
+            margin-right: 3px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        .action-btn.start {
+            background: #28a745;
+        }
+        
+        .action-btn.stop {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: wait;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #006994;
+            margin-top: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="company-badge">
+                <img src="/images/EricssonSoftware.png" alt="ЭрикссонСофт" class="company-logo">
+                <span class="company-name">ООО ЭрикссонСофт</span>
+            </div>
+            <h1>🔷 Менеджер Гипервизора (CEE)</h1>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('vms')">🖥️ ВМ</button>
+            <button class="tab" onclick="showTab('images')">💾 Образы</button>
+        </div>
+        
+        <div id="vms-tab" class="tab-content active">
+            <div class="create-vm">
+                <h2>➕ Добавить Виртуальную Машину</h2>
+                
+                <div class="form-labels">
+                    <span>Имя ВМ</span>
+                    <span>CPU (ядра)</span>
+                    <span>Память (MB)</span>
+                    <span>Операционная система</span>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" id="vm-name" placeholder="Например: ubuntu-server" value="test-vm">
+                    <input type="number" id="vm-cpu" placeholder="1-16 ядер" value="2" min="1" max="16">
+                    <input type="number" id="vm-ram" placeholder="Например: 2048" value="2048" min="512" step="512">
+                    <select id="vm-os">
+                        <option value="linux">Linux</option>
+                        <option value="ubuntu">Ubuntu</option>
+                        <option value="centos">CentOS</option>
+                        <option value="debian">Debian</option>
+                        <option value="windows">Windows</option>
+                    </select>
+                </div>
+                
+                <div class="form-labels" style="grid-template-columns: 1fr;">
+                    <span>Путь к образу диска (ISO или QCOW2)</span>
+                </div>
+                
+                <div class="form-group">
+                    <div class="file-selector">
+                        <input type="text" id="vm-image" placeholder="Выберите или укажите путь..." value="/var/lib/libvirt/images/ubuntu.qcow2">
+                        <button onclick="selectImage()" type="button">📁 Выбрать из образов</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="vm-autostart">
+                        <label for="vm-autostart">Запустить после создания</label>
+                    </div>
+                    <button onclick="createVM()">⚡ Создать ВМ</button>
+                </div>
+            </div>
+            
+            <div class="vms-list">
+                <h2>🖥️ Виртуальные машины</h2>
+                <div id="vms-container">
+                    <div class="loading">Загрузка списка ВМ...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="images-tab" class="tab-content">
+            <div class="images-section">
+                <h2>💾 Загрузка образов</h2>
+                
+                <div class="upload-area" id="dropZone" onclick="triggerFileUpload()">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Перетащите файл сюда или нажмите для выбора</div>
+                    <div class="upload-hint">Поддерживаются форматы: ISO, QCOW2</div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".iso,.qcow2" onchange="handleFileSelect(this.files)">
+                </div>
+                
+                <div id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                
+                <div class="image-list" id="imageList">
+                    <h3>Доступные образы:</h3>
+                    <div id="images-container">Загрузка списка образов...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <img src="/images/EricssonSoftware.png" alt="ЭрикссонСофт">
+            <span>© 2026 ООО ЭрикссонСофт - Гипервизор (Cloud Execution Environment)</span>
+        </div>
+    </div>
+
+    <script>
+        // Состояние кнопок
+        let actionInProgress = false;
+        
+        // Переключение вкладок
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            if (tabName === 'images') {
+                loadImages();
+            }
+        }
+        
+        // Drag & drop загрузка
+        const dropZone = document.getElementById('dropZone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('dragover');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('dragover');
+            });
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            handleFileSelect(files);
+        });
+        
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+        
+        function handleFileSelect(files) {
+            if (files.length === 0) return;
+            
+            const file = files[0];
+            const fileName = file.name;
+            const fileExt = fileName.split('.').pop().toLowerCase();
+            
+            if (!['iso', 'qcow2'].includes(fileExt)) {
+                alert('Ошибка: Поддерживаются только ISO и QCOW2 файлы!');
+                return;
+            }
+            
+            uploadFile(file);
+        }
+        
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
+            progressDiv.style.display = 'block';
+            
+            const xhr = new XMLHttpRequest();
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressFill.style.width = percent + '%';
+                    progressFill.textContent = Math.round(percent) + '%';
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    alert('Файл успешно загружен!');
+                    loadImages();
+                } else {
+                    alert('Ошибка загрузки файла');
+                }
+                progressDiv.style.display = 'none';
+                progressFill.style.width = '0%';
+                progressFill.textContent = '0%';
+            });
+            
+            xhr.addEventListener('error', () => {
+                alert('Ошибка загрузки файла');
+                progressDiv.style.display = 'none';
+            });
+            
+            xhr.open('POST', '/api/upload-image');
+            xhr.send(formData);
+        }
+        
+        function loadImages() {
+            fetch('/api/images')
+                .then(response => response.json())
+                .then(images => {
+                    const container = document.getElementById('images-container');
+                    if (images.length === 0) {
+                        container.innerHTML = '<p>Нет загруженных образов</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    images.forEach(img => {
+                        const badge = img.type === 'iso' ? 'badge-iso' : 'badge-qcow2';
+                        const typeText = img.type === 'iso' ? 'ISO' : 'QCOW2';
+                        html += `
+                            <div class="image-item">
+                                <div class="image-info">
+                                    <span class="image-name">${img.name}</span>
+                                    <span class="image-size">(${img.size})</span>
+                                    <span class="image-badge ${badge}">${typeText}</span>
+                                </div>
+                                <div>
+                                    <span class="delete-image" onclick="deleteImage('${img.name}')">🗑️</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('images-container').innerHTML = '<p class="error">Ошибка загрузки списка образов</p>';
+                });
+        }
+        
+        function deleteImage(name) {
+            if (!confirm(`Удалить образ ${name}?`)) return;
+            
+            fetch(`/api/images/${name}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        loadImages();
+                    }
+                });
+        }
+        
+        function selectImage() {
+            fetch('/api/images')
+                .then(response => response.json())
+                .then(images => {
+                    if (images.length === 0) {
+                        alert('Нет доступных образов');
+                        return;
+                    }
+                    
+                    const imageNames = images.map(img => img.name);
+                    const selected = prompt('Выберите образ (введите номер):\n' + 
+                        imageNames.map((name, i) => `${i+1}. ${name}`).join('\n'));
+                    
+                    if (selected) {
+                        const index = parseInt(selected) - 1;
+                        if (index >= 0 && index < imageNames.length) {
+                            document.getElementById('vm-image').value = `/var/lib/libvirt/images/${imageNames[index]}`;
+                        } else {
+                            alert('Неверный номер');
+                        }
+                    }
+                });
+        }
+        
+        async function fetchVMs() {
+            try {
+                const response = await fetch('/api/v1/vms');
+                const vms = await response.json();
+                displayVMs(vms);
+            } catch (error) {
+                showError('Ошибка загрузки ВМ');
+            }
+        }
+        
+        function displayVMs(vms) {
+            const container = document.getElementById('vms-container');
+            
+            if (!vms || vms.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 30px; color: #666;">Нет виртуальных машин</p>';
+                return;
+            }
+            
+            let html = '<table><tr><th>ID</th><th>Имя</th><th>vCPU</th><th>RAM</th><th>ОС</th><th>Состояние</th><th>Действия</th></tr>';
+            
+            vms.forEach(vm => {
+                const stateClass = vm.state === 'running' ? 'state-running' : 'state-stopped';
+                const stateText = vm.state === 'running' ? 'Работает' : 'Остановлена';
+                const ramGB = vm.memory_gb || (vm.memory_mb ? (vm.memory_mb / 1024).toFixed(1) : '2.0');
+                
+                html += `
+                    <tr>
+                        <td>${vm.id || 'N/A'}</td>
+                        <td><strong>${vm.name || 'Без имени'}</strong></td>
+                        <td>${vm.vcpus || 2}</td>
+                        <td>${ramGB} GB</td>
+                        <td>${vm.os_type || 'linux'}</td>
+                        <td class="${stateClass}">${stateText}</td>
+                        <td>
+                            <button class="action-btn ${vm.state === 'running' ? 'stop' : 'start'}" 
+                                    onclick="${vm.state === 'running' ? 'stopVM' : 'startVM'}('${vm.id}')"
+                                    ${actionInProgress ? 'disabled' : ''}>
+                                ${vm.state === 'running' ? '⏸️ Стоп' : '▶️ Старт'}
+                            </button>
+                            <button class="action-btn" onclick="deleteVM('${vm.id}')"
+                                    ${actionInProgress ? 'disabled' : ''}>
+                                🗑️ Удалить
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</table>';
+            container.innerHTML = html;
+        }
+        
+        async function createVM() {
+            if (actionInProgress) return;
+            
+            const name = document.getElementById('vm-name').value;
+            const vcpus = document.getElementById('vm-cpu').value;
+            const memory = document.getElementById('vm-ram').value;
+            const image = document.getElementById('vm-image').value;
+            const os_type = document.getElementById('vm-os').value;
+            const autostart = document.getElementById('vm-autostart').checked;
+            
+            if (!name || !vcpus || !memory || !image) {
+                alert('Заполните все поля');
+                return;
+            }
+            
+            actionInProgress = true;
+            const createBtn = document.querySelector('button[onclick="createVM()"]');
+            createBtn.disabled = true;
+            createBtn.textContent = '⏳ Создание...';
+            
+            const vmData = {
+                name: name,
+                vcpus: parseInt(vcpus),
+                memory: parseInt(memory),
+                image: image,
+                os_type: os_type,
+                storage_gb: 20,
+                autostart: autostart
+            };
+            
+            try {
+                const response = await fetch('/api/v1/vms', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(vmData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(`✅ ВМ создана с ID: ${result.id}`);
+                    fetchVMs();
+                    document.getElementById('vm-name').value = 'test-vm';
+                    document.getElementById('vm-cpu').value = '2';
+                    document.getElementById('vm-ram').value = '2048';
+                    document.getElementById('vm-image').value = '/var/lib/libvirt/images/ubuntu.qcow2';
+                    document.getElementById('vm-autostart').checked = false;
+                } else {
+                    alert('❌ Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+                }
+            } catch (error) {
+                alert('❌ Ошибка соединения с сервером');
+            } finally {
+                actionInProgress = false;
+                createBtn.disabled = false;
+                createBtn.textContent = '⚡ Создать ВМ';
+            }
+        }
+        
+        async function deleteVM(id) {
+            if (actionInProgress) return;
+            if (!confirm(`🗑️ Удалить виртуальную машину ${id}?`)) return;
+            
+            actionInProgress = true;
+            
+            try {
+                const response = await fetch(`/api/v1/vms/${id}`, {method: 'DELETE'});
+                if (response.ok) {
+                    alert('✅ ВМ удалена');
+                    fetchVMs();
+                } else {
+                    alert('❌ Ошибка удаления');
+                }
+            } catch (error) {
+                alert('❌ Ошибка удаления');
+            } finally {
+                actionInProgress = false;
+            }
+        }
+        
+        async function stopVM(id) {
+            if (actionInProgress) return;
+            
+            actionInProgress = true;
+            
+            // Визуальный фидбек
+            const stopBtn = event.target;
+            const originalText = stopBtn.textContent;
+            stopBtn.textContent = '⏳ Остановка...';
+            stopBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/v1/vms/${id}/stop`, {method: 'POST'});
+                if (response.ok) {
+                    // Не показываем alert, просто обновляем список
+                    await fetchVMs();
+                } else {
+                    alert('❌ Ошибка остановки');
+                }
+            } catch (error) {
+                alert('❌ Ошибка остановки');
+            } finally {
+                actionInProgress = false;
+                // Кнопка обновится при перерисовке таблицы
+            }
+        }
+        
+        async function startVM(id) {
+            if (actionInProgress) return;
+            
+            actionInProgress = true;
+            
+            // Визуальный фидбек
+            const startBtn = event.target;
+            const originalText = startBtn.textContent;
+            startBtn.textContent = '⏳ Запуск...';
+            startBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/v1/vms/${id}/start`, {method: 'POST'});
+                if (response.ok) {
+                    // Не показываем alert, просто обновляем список
+                    await fetchVMs();
+                } else {
+                    alert('❌ Ошибка запуска');
+                }
+            } catch (error) {
+                alert('❌ Ошибка запуска');
+            } finally {
+                actionInProgress = false;
+                // Кнопка обновится при перерисовке таблицы
+            }
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('vms-container');
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // Инициализация
+        fetchVMs();
+        setInterval(fetchVMs, 5000);
+    </script>
+</body>
+</html>

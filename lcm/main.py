@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from lcm.api.endpoints import hosts, images, networks, vms
+from lcm.api.endpoints import hosts, images, networks, vms, vms_kvm
 from lcm.config import settings
 from lcm.db import engine
 from lcm.db.models import Base
@@ -34,6 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(vms.router, prefix="/api/v1", tags=["VMs"])
+app.include_router(vms_kvm.router, prefix="/api/v1", tags=["VMs-KVM"])
 app.include_router(networks.router, prefix="/api/v1", tags=["Networks"])
 app.include_router(images.router, prefix="/api/v1", tags=["Images"])
 app.include_router(hosts.router, prefix="/api/v1", tags=["Hosts"])

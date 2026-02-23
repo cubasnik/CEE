@@ -30,3 +30,12 @@ cee-lcm.db
 # OS
 .DS_Store
 Thumbs.db
+
+# Temporary files
+.coverage
+*.db
+*.sqlite3
+*.pyc
+__pycache__/
+*.log
+*.pid
