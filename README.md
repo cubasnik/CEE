@@ -1,42 +1,58 @@
+# ☁️ CEE — Cloud Execution Environment
 
-## 📚 Documentation
-- [Architecture Overview](docs/architecture.md)
-- [API Reference](docs/api/api.md)
-- [Setup Guide](docs/setup.md)
-- [Development Roadmap](docs/roadmap.md)
+CEE is a lightweight hypervisor and orchestration framework for managing virtual machines across multiple backends (KVM, OpenStack, and more).
 
-## 🧪 Testing
+---
+
+## ✨ Features
+
+- 🔧 Lifecycle Management (LCM) for VMs
+- 🌐 REST API for VM operations
+- 🧩 Pluggable drivers (KVM, OpenStack)
+- 📦 Python 3.12+ support
+- ✅ Tested with `pytest` and high coverage
+- 🐳 Ready for containerization (Docker)
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python **3.12** (recommended, tested)
+- `libvirt` and `libvirt-dev` (for KVM driver)
+- Virtual environment (recommended)
+- Git
+
+### Installation Steps
+
 ```bash
-# Run unit tests
-make test
+# 1. Clone the repository
+git clone https://github.com/cubasnik/CEE.git
+cd CEE
 
-# Run integration tests
-make test-integration
+# 2. Create and activate virtual environment
+python3.12 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Run with coverage
-make test-coverage
-```
+# 3. Install Python dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
-## 🤝 Contributing
-Contributions are welcome! Please read our Contributing Guidelines and feel free to submit pull requests.
+# 4. Install additional required packages
+pip install fastapi uvicorn python-multipart
+pip install openstacksdk python-openstackclient
+pip install libvirt-python
 
+# 5. Install system dependencies (Linux/WSL only)
+sudo apt update
+sudo apt install libvirt-dev pkg-config
+
+# 6. Verify installation
+pytest tests/ -v
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🌟 Star History
-If you find this project useful, please consider giving it a star! It helps others discover it.
-# Example: Create a VM via API
-```bash
-curl -X POST http://localhost:8000/api/v1/vms \
-	-H "Content-Type: application/json" \
-	-d '{
-		"name": "my-vm",
-		"vcpus": 2,
-		"memory": 4096,
-		"image": "ubuntu-22.04.qcow2"
-	}'
-```
-## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.13+
@@ -83,13 +99,26 @@ make run
 ## 🏗 Architecture
 
 CEE/
-├── lcm/ # Lifecycle Management (core orchestrator)
-│   ├── api/           # REST API endpoints
-│   ├── orchestrator/  # VM lifecycle orchestration
-│   ├── scheduler/     # Resource scheduling
-│   ├── drivers/       # Virtualization backends
-│   └── db/            # Database models and repository
-├── tests/             # Unit tests
-├── integration/       # Integration tests
-├── docs/              # Documentation
-└── scripts/           # Utility scripts
+├── lcm/                    # Lifecycle Manager core
+│   ├── api/                # API endpoints
+│   ├── drivers/            # Backend drivers
+│   │   ├── kvm/            # KVM driver
+│   │   └── openstack_driver.py  # OpenStack driver
+│   └── models/             # Data models
+├── cee-lcm/                # CEE-specific extensions
+├── tests/                   # Unit and integration tests
+│   ├── unit/               # Unit tests
+│   │   ├── api/            # API tests
+│   │   └── drivers/        # Driver tests
+│   └── integration/         # Integration tests
+├── docs/                    # Documentation
+│   ├── architecture.md      # Architecture overview
+│   ├── api/                 # API documentation
+│   └── setup.md             # Setup guide
+├── scripts/                 # Helper scripts
+├── static/                  # Static files
+├── requirements.txt         # Production dependencies
+├── requirements-dev.txt     # Development dependencies
+├── pyproject.toml           # Project config (pytest, etc.)
+├── main.py                  # Application entry point
+└── README.md                # This file

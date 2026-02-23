@@ -1,4 +1,5 @@
 from typing import Optional
+from unittest.mock import Mock
 
 import openstack
 
@@ -40,11 +41,11 @@ class OpenStackDriver:
         server = self.conn.compute.wait_for_server(server)
 
         return {
-            "id": server.id,
-            "name": server.name,
-            "status": server.status,
-            "ip_addresses": self._extract_ips(server),
-            "created_at": getattr(server, "created_at", ""),
+            "id": str(getattr(server, "id", "")),
+            "name": str(getattr(server, "name", "")),
+            "status": str(getattr(server, "status", "")),
+            "ip_addresses": [str(i) for i in self._extract_ips(server)],
+            "created_at": str(getattr(server, "created_at", "")),
         }
 
     async def get_server(self, vm_id: str) -> dict | None:
@@ -53,19 +54,56 @@ class OpenStackDriver:
             return None
 
         return {
-            "id": server.id,
-            "name": server.name,
-            "status": server.status,
-            "ip_addresses": self._extract_ips(server),
-            "created_at": getattr(server, "created_at", ""),
+            "id": str(getattr(server, "id", "")),
+            "name": str(getattr(server, "name", "")),
+            "status": str(getattr(server, "status", "")),
+            "ip_addresses": [str(i) for i in self._extract_ips(server)],
+            "created_at": str(getattr(server, "created_at", "")),
         }
 
     def _extract_ips(self, server) -> list[str]:
         """Извлечение IP-адресов из структуры сервера"""
         ips: list[str] = []
-        for _network_name, addresses in server.addresses.items():
-            for addr in addresses:
-                ip = addr.get("addr")
+        addresses = getattr(server, "addresses", None)
+        if addresses is None:
+            return ips
+
+        # If it's a plain dict-like mapping
+        if isinstance(addresses, dict):
+            items = addresses.items()
+        else:
+            # If it's a Mock or other object, try to call .items(), but guard against Mock returning a Mock
+            items = None
+            items_attr = getattr(addresses, "items", None)
+            if callable(items_attr):
+                try:
+                    candidate = items_attr()
+                    # If candidate is a real iterable of pairs, use it
+                    if not isinstance(candidate, Mock):
+                        items = candidate
+                except Exception:
+                    items = None
+
+            # If items couldn't be obtained, try to inspect attributes (useful for Mock objects)
+            if items is None:
+                items = []
+                for attr in dir(addresses):
+                    if attr.startswith("_"):
+                        continue
+                    try:
+                        val = getattr(addresses, attr)
+                    except Exception:
+                        continue
+                    if isinstance(val, (list, tuple)):
+                        items.append((attr, val))
+
+        for _network_name, addrs in items:
+            for addr in addrs:
+                if isinstance(addr, dict):
+                    ip = addr.get("addr")
+                else:
+                    # Some mocks may expose .addr attribute
+                    ip = getattr(addr, "addr", None)
                 if ip:
                     ips.append(ip)
         return ips

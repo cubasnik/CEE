@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 
 
 import pytest
@@ -86,7 +87,7 @@ class TestOpenStackDriver:
         
         driver.conn.compute.find_image.return_value = None
         
-        with pytest.raises(ValueError, match="Image not found"):
+        with pytest.raises(ValueError, match="Image .* not found"):
             await driver.create_server(
                 name="test-server",
                 image_name="non-existent-image",
@@ -109,7 +110,7 @@ class TestOpenStackDriver:
         assert "192.168.1.100" in ips
         assert "10.0.0.1" in ips
         assert "8.8.8.8" in ips
-        return SimpleNamespace(id="srv-1")
+        # removed stray return — tests should not return a value
 
     def wait_for_server(self, _server):
         return SimpleNamespace(
@@ -140,6 +141,29 @@ class FakeNetwork:
         return SimpleNamespace(id="net-1") if self._exists else None
 
 
+class FakeCompute:
+    def __init__(self, image=True, flavor=True):
+        self._image_exists = image
+        self._flavor_exists = flavor
+
+    def find_image(self, _name):
+        return SimpleNamespace(id="image-1") if self._image_exists else None
+
+    def find_flavor(self, _name):
+        return SimpleNamespace(id="flavor-1") if self._flavor_exists else None
+
+    def create_server(self, **kwargs):
+        return SimpleNamespace(
+            id="srv-1",
+            name=kwargs.get("name"),
+            status="ACTIVE",
+            addresses={"net": [{"addr": "10.0.0.10"}, {"addr": "192.168.0.10"}]},
+        )
+
+    def wait_for_server(self, server):
+        return server
+
+
 class FakeConn:
     def __init__(self, image=True, flavor=True, network=True):
         self.compute = FakeCompute(image=image, flavor=flavor)
@@ -148,7 +172,7 @@ class FakeConn:
 
 @pytest.mark.asyncio
 async def test_create_server_success(monkeypatch):
-    monkeypatch.setattr(openstack, "connect", lambda: FakeConn())
+    monkeypatch.setattr("lcm.drivers.openstack_driver.openstack.connect", lambda: FakeConn())
     driver = OpenStackDriver()
 
     result = await driver.create_server(
@@ -165,7 +189,7 @@ async def test_create_server_success(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_create_server_raises_if_image_missing(monkeypatch):
-    monkeypatch.setattr(openstack, "connect", lambda: FakeConn(image=False))
+    monkeypatch.setattr("lcm.drivers.openstack_driver.openstack.connect", lambda: FakeConn(image=False))
     driver = OpenStackDriver()
 
     with pytest.raises(ValueError, match="Image"):

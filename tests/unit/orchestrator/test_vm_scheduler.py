@@ -27,7 +27,7 @@ class TestVMScheduler:
         # Выбираем хост для flavor, требующего 4096 MB RAM и 2 CPU
         selected_host = await scheduler.select_host("m1.small")
         
-        assert selected_host in ["host1", "host2", "host3"]
+        assert selected_host.name in ["host1", "host2", "host3"]
     
     @pytest.mark.asyncio
     async def test_select_host_no_available_hosts(self, scheduler):

@@ -1,0 +1,180 @@
+from types import SimpleNamespace
+
+
+import pytest
+from unittest.mock import Mock, patch, AsyncMock
+from lcm.drivers.openstack_driver import OpenStackDriver
+
+class TestOpenStackDriver:
+    """Тесты для OpenStack драйвера"""
+    
+    @pytest.fixture
+    def driver(self):
+        """Фикстура с замоканным connection"""
+        with patch('openstack.connect') as mock_connect:
+            mock_conn = Mock()
+            mock_connect.return_value = mock_conn
+            
+            # Мокаем compute сервис
+            mock_conn.compute = Mock()
+            
+            driver = OpenStackDriver()
+            driver.conn = mock_conn
+            
+            yield driver
+    
+    @pytest.mark.asyncio
+    async def test_create_server_success(self, driver):
+        """Тест успешного создания сервера"""
+        
+        # Настраиваем моки
+        mock_image = Mock()
+        mock_image.id = "image-123"
+        
+        mock_flavor = Mock()
+        mock_flavor.id = "flavor-123"
+        
+        mock_network = Mock()
+        mock_network.id = "network-123"
+        
+        mock_server = Mock()
+        mock_server.id = "server-123"
+        mock_server.name = "test-server"
+        mock_server.status = "ACTIVE"
+        mock_server.addresses = {
+            "private": [{"addr": "192.168.1.100"}]
+        }
+        
+        # Настраиваем методы поиска
+        driver.conn.compute.find_image.return_value = mock_image
+        driver.conn.compute.find_flavor.return_value = mock_flavor
+        driver.conn.network.find_network.return_value = mock_network
+        
+        # Настраиваем создание сервера
+        driver.conn.compute.create_server.return_value = mock_server
+        driver.conn.compute.wait_for_server.return_value = mock_server
+        
+        # Вызываем тестируемый метод
+        result = await driver.create_server(
+            name="test-server",
+            image_name="ubuntu-22.04",
+            flavor_name="m1.small",
+            network_name="private"
+        )
+        
+        # Проверяем результат
+        assert result["id"] == "server-123"
+        assert result["name"] == "test-server"
+        assert result["status"] == "ACTIVE"
+        assert "192.168.1.100" in result["ip_addresses"]
+        
+        # Проверяем вызовы
+        driver.conn.compute.find_image.assert_called_once_with("ubuntu-22.04")
+        driver.conn.compute.find_flavor.assert_called_once_with("m1.small")
+        driver.conn.network.find_network.assert_called_once_with("private")
+        
+        driver.conn.compute.create_server.assert_called_once_with(
+            name="test-server",
+            image_id="image-123",
+            flavor_id="flavor-123",
+            networks=[{"uuid": "network-123"}],
+            availability_zone=None
+        )
+    
+    @pytest.mark.asyncio
+    async def test_create_server_image_not_found(self, driver):
+        """Тест создания сервера с несуществующим образом"""
+        
+        driver.conn.compute.find_image.return_value = None
+        
+        with pytest.raises(ValueError, match="Image .* not found"):
+            await driver.create_server(
+                name="test-server",
+                image_name="non-existent-image",
+                flavor_name="m1.small",
+                network_name="private"
+            )
+    
+    def test_extract_ips(self, driver):
+        """Тест извлечения IP-адресов"""
+        
+        mock_server = Mock()
+        mock_server.addresses = {
+            "private": [{"addr": "192.168.1.100"}, {"addr": "10.0.0.1"}],
+            "public": [{"addr": "8.8.8.8"}]
+        }
+        
+        ips = driver._extract_ips(mock_server)
+        
+        assert len(ips) == 3
+        assert "192.168.1.100" in ips
+        assert "10.0.0.1" in ips
+        assert "8.8.8.8" in ips
+        return SimpleNamespace(id="srv-1")
+
+    def wait_for_server(self, _server):
+        return SimpleNamespace(
+            id="srv-1",
+            name="vm-1",
+            status="ACTIVE",
+            created_at="2026-02-20T00:00:00Z",
+            addresses={"net": [{"addr": "10.0.0.10"}, {"addr": "192.168.0.10"}]},
+        )
+
+    def get_server(self, vm_id):
+        if vm_id == "missing":
+            return None
+        return SimpleNamespace(
+            id=vm_id,
+            name="vm-existing",
+            status="ACTIVE",
+            created_at="2026-02-20T00:00:00Z",
+            addresses={"net": [{"addr": "10.0.0.11"}]},
+        )
+
+
+class FakeNetwork:
+    def __init__(self, exists=True):
+        self._exists = exists
+
+    def find_network(self, _name):
+        return SimpleNamespace(id="net-1") if self._exists else None
+
+
+class FakeConn:
+    def __init__(self, image=True, flavor=True, network=True):
+        self.compute = FakeCompute(image=image, flavor=flavor)
+        self.network = FakeNetwork(exists=network)
+
+
+@pytest.mark.asyncio
+async def test_create_server_success(monkeypatch):
+#    import openstack
+#    monkeypatch.setattr(openstack, "connect", lambda: FakeConn())
+    driver = OpenStackDriver()
+
+    result = await driver.create_server(
+        name="vm-1",
+        image_name="ubuntu-22.04",
+        flavor_name="m1.small",
+        network_name="private-net",
+    )
+
+    assert result["id"] == "srv-1"
+    assert result["status"] == "ACTIVE"
+    assert result["ip_addresses"] == ["10.0.0.10", "192.168.0.10"]
+
+
+@pytest.mark.asyncio
+#    import openstack
+#async def test_create_server_raises_if_image_missing(monkeypatch):
+    monkeypatch.setattr(openstack, "connect", lambda: FakeConn(image=False))
+    driver = OpenStackDriver()
+
+    with pytest.raises(ValueError, match="Image"):
+        await driver.create_server(
+            name="vm-1",
+            image_name="missing-image",
+            flavor_name="m1.small",
+            network_name="private-net",
+        )
